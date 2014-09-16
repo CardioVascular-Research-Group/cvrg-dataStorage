@@ -2,7 +2,7 @@ cvrg-dataStorage
 ================
 This project represents the cvrg data storage utilities classes.
 
-With these classes you will manage the waveform 3 data, on the environment below:
+With these classes you will manage the waveform 3 data, at the storage environments below:
 
 	Relational data base with hibernate
 
