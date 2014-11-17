@@ -7,6 +7,7 @@ import java.util.Calendar;
 
 public class AnnotationDTO implements Serializable, Cloneable{
 	
+	public static final String ELECTROCARDIOGRAPHY_ONTOLOGY = "ECG";
 	public static final String ECG_TERMS_ONTOLOGY = "ECGT";
 
 	private static final long serialVersionUID = 198688003623925166L;
