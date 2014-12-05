@@ -8,6 +8,7 @@ public enum UploadState {
 	WRITE,
 	ANNOTATION,
 	DONE,
-	ERROR;
+	ERROR, 
+	WARN;
 	
 }

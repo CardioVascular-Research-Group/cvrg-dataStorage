@@ -101,9 +101,12 @@ public class UploadStatusDTO implements Serializable{
 		
 		if(status != null){
 			if(status){
-				actualPhase = UploadState.DONE;	
+				actualPhase = UploadState.DONE;
+				if(this.getMessage() != null){
+					actualPhase = UploadState.WARN;
+				}
 			}else{
-				actualPhase = UploadState.ERROR;
+				actualPhase = UploadState.ERROR;	
 			}
 		}
 	
@@ -121,6 +124,7 @@ public class UploadStatusDTO implements Serializable{
 			case WRITE: progress = 60; break;
 			case ANNOTATION: progress = 80; break;
 			case DONE: progress = 100; break;
+			case WARN: progress = 100; break;
 			case ERROR: progress = 100; break;
 		}
 
