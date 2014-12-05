@@ -182,10 +182,10 @@ public class DataStorageTest{
 	}
 
 	@Test
-	public void test0405getFileListByDocumentRecordId() {
+	public void test0405getECGFilesByDocumentRecordId() {
 		List<FileInfoDTO> ret = null;
 		try {
-			ret = dataStorage.getFileListByDocumentRecordId(document.getDocumentRecordId());
+			ret = dataStorage.getECGFilesByDocumentRecordId(document.getDocumentRecordId());
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
@@ -193,10 +193,10 @@ public class DataStorageTest{
 	}
 	
 	@Test
-	public void test0406getFileListByDocumentRecordId() {
+	public void test0406getAllFilesByDocumentRecordId() {
 		List<FileInfoDTO> ret = null;
 		try {
-			ret = dataStorage.getFileListByUser(userId);
+			ret = dataStorage.getAllFilesByUser(userId);
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}

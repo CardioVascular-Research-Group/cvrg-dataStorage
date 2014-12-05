@@ -271,7 +271,7 @@ public class HibernateConnection extends Connection {
 	}
 
 	@Override
-	public List<FileInfoDTO> getFileListByUser(long userId) throws DataStorageException {
+	public List<FileInfoDTO> getAllFilesByUser(long userId) throws DataStorageException {
 		
 		List<FileInfoDTO> ret = new ArrayList<FileInfoDTO>();
 		
@@ -299,7 +299,7 @@ public class HibernateConnection extends Connection {
 	}
 	
 	@Override
-	public List<FileInfoDTO> getFileListByDocumentRecordId(long docId) throws DataStorageException {
+	public List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException {
 		
 		List<FileInfoDTO> ret = new ArrayList<FileInfoDTO>();
 		
@@ -325,6 +325,35 @@ public class HibernateConnection extends Connection {
 		
 		return ret;
 	}
+	
+	@Override
+	public List<FileInfoDTO> getAllFilesByDocumentRecordId(long docId) throws DataStorageException {
+		
+		List<FileInfoDTO> ret = new ArrayList<FileInfoDTO>();
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select f from FileInfo f where f.documentRecordId = :docId");
+			
+			q.setParameter("docId", docId);
+			
+			@SuppressWarnings("unchecked")
+			List<FileInfo> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				FileInfo entity = l.get(i);
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
 	
 	@Override
 	public Long storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException{
@@ -1461,6 +1490,37 @@ public class HibernateConnection extends Connection {
 				ret = true;
 			}else{
 				throw new DataStorageException("Document Record not exist for this user");	
+			}
+						
+		}catch(HibernateException ex){
+			throw new DataStorageException(ex);
+		}
+		
+		return ret;
+	}
+	
+	@Override
+	public boolean deleteAllFilesByDocumentRecordId(long documentRecordId) throws DataStorageException{
+		
+		boolean ret = false;
+		
+		try{
+			Session session = sessionFactory.openSession();		
+			
+			DocumentRecord docEntity = (DocumentRecord) session.get(DocumentRecord.class, documentRecordId);
+			
+			if(docEntity != null && docEntity.getDocumentRecordId().equals(documentRecordId)){
+				session.beginTransaction();
+				
+				for (FileInfo f : docEntity.getFilesInfo()) {
+					session.delete(f);	
+				}
+				
+				session.getTransaction().commit();
+				session.close();
+				ret = true;
+			}else{
+				throw new DataStorageException("Document Record not exist");	
 			}
 						
 		}catch(HibernateException ex){

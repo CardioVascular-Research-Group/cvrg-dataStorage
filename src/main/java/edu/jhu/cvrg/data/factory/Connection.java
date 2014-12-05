@@ -50,8 +50,9 @@ public abstract class Connection {
 	public abstract List<UploadStatusDTO> getUploadStatusByUserAndDocId(long userId, Set<Long> docIds) throws DataStorageException;
 	
 	
-	public abstract List<FileInfoDTO> getFileListByUser(long userId) throws DataStorageException;
-	public abstract List<FileInfoDTO> getFileListByDocumentRecordId(long docId) throws DataStorageException;
+	public abstract List<FileInfoDTO> getAllFilesByUser(long userId) throws DataStorageException;
+	public abstract List<FileInfoDTO> getAllFilesByDocumentRecordId(long docId) throws DataStorageException;
+	public abstract List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException;
 	
 	public abstract AnalysisJobDTO getAnalysisJobById(long jobId) throws DataStorageException;
 	public abstract DocumentRecordDTO getDocumentRecordById(long documentRecordId) throws DataStorageException;
@@ -60,6 +61,7 @@ public abstract class Connection {
 	public abstract AnnotationDTO getAnnotationById(Long userId, Long annotationId) throws DataStorageException;
 	
 	public abstract boolean deleteDocumentRecord(long userId, long documentRecordId) throws DataStorageException;
+	public abstract boolean deleteAllFilesByDocumentRecordId(long documentRecordId) throws DataStorageException;
 	
 	public DataStorageType getType() {
 		return type;
