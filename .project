@@ -5,9 +5,6 @@
   <projects>
     <project>cvrg-analysisHub</project>
     <project>ECG_Converter4</project>
-    <project>jsierraecg</project>
-    <project>Phlilips1.04</project>
-    <project>schiller-data</project>
   </projects>
   <buildSpec>
     <buildCommand>
