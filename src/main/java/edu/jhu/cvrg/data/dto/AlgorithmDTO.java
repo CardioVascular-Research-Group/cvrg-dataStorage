@@ -236,6 +236,17 @@ public class AlgorithmDTO implements Serializable{
 	public void setWfdbAnnotationOutput(boolean wfdbAnnotationOutput) {
 		this.wfdbAnnotationOutput = wfdbAnnotationOutput;
 	}
+	
+	public boolean getHasSettedParameters(){
+		if(aParameters != null){
+			for (AdditionalParametersDTO p : aParameters) {
+				if(p.getParameterUserSpecifiedValue() != null){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 }
 

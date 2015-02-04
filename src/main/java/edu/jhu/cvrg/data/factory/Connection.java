@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import edu.jhu.cvrg.data.dto.AdditionalParametersDTO;
 import edu.jhu.cvrg.data.dto.AlgorithmDTO;
 import edu.jhu.cvrg.data.dto.AnalysisJobDTO;
+import edu.jhu.cvrg.data.dto.AnalysisStatusDTO;
 import edu.jhu.cvrg.data.dto.AnnotationDTO;
 import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.data.dto.FileInfoDTO;
@@ -43,16 +44,18 @@ public abstract class Connection {
 	public abstract Long storeAnnotations(Set<AnnotationDTO> annotSet) throws DataStorageException;
 	public abstract Long storeAnnotation(AnnotationDTO annotation) throws DataStorageException;
 	public abstract boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId) throws DataStorageException;
-	public abstract Long storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException;
+	public abstract AnalysisJobDTO storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException;
 	public abstract boolean updateUploadStatus(long documentRecordId, UploadState uploadPhase, Long time, Boolean status, String message) throws DataStorageException;
+	public abstract boolean updateAnalysisStatus(long analysisJobId, Long analysisTime, String message) throws DataStorageException;
 	public abstract boolean storeUploadStatus(UploadStatusDTO status) throws DataStorageException;
 	public abstract List<UploadStatusDTO> getUploadStatusByUser(long userId) throws DataStorageException;
 	public abstract List<UploadStatusDTO> getUploadStatusByUserAndDocId(long userId, Set<Long> docIds) throws DataStorageException;
-	
+	public abstract List<AnalysisStatusDTO> getAnalysisStatusByUserAndAnalysisId(long userId, Set<Long> analysisIds) throws DataStorageException;
 	
 	public abstract List<FileInfoDTO> getAllFilesByUser(long userId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getAllFilesByDocumentRecordId(long docId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException;
+	public abstract List<AnalysisJobDTO> getAnalysisJobByUser(long userId) throws DataStorageException;
 	
 	public abstract AnalysisJobDTO getAnalysisJobById(long jobId) throws DataStorageException;
 	public abstract DocumentRecordDTO getDocumentRecordById(long documentRecordId) throws DataStorageException;

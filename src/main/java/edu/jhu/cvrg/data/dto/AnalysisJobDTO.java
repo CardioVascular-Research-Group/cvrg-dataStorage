@@ -17,6 +17,8 @@ public class AnalysisJobDTO implements Serializable{
 	private String serviceMethod;
 	private Date dateOfAnalysis;
 	private long userId;
+	private Long analysisTime;
+	private String message;
 	
 	public AnalysisJobDTO(Long analysisJobId, long documentRecordId,
 			int fileCount, int parameterCount, String serviceName,
@@ -31,6 +33,14 @@ public class AnalysisJobDTO implements Serializable{
 		this.serviceMethod = serviceMethod;
 		this.userId = userId;
 		this.dateOfAnalysis = dateOfAnalysis;
+	}
+	
+	public AnalysisJobDTO(Long analysisJobId, long documentRecordId,
+			int fileCount, int parameterCount, String serviceName,
+			String serviceUrl, String serviceMethod, Date dateOfAnalysis, long userId, Long analysisTime, String message) {
+		this(analysisJobId, documentRecordId, fileCount, parameterCount, serviceName, serviceUrl, serviceMethod, dateOfAnalysis, userId);
+		this.analysisTime = analysisTime;
+		this.message = message;
 	}
 	
 	public Long getAnalysisJobId() {
@@ -90,6 +100,56 @@ public class AnalysisJobDTO implements Serializable{
 
 	public void setDateOfAnalysis(Date dateOfAnalysis) {
 		this.dateOfAnalysis = dateOfAnalysis;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public Long getAnalysisTime() {
+		return analysisTime;
+	}
+
+	public void setAnalysisTime(Long analysisTime) {
+		this.analysisTime = analysisTime;
+	}
+	
+	public void update(AnalysisJobDTO newAnalysis){
+		
+		if(this.equals(newAnalysis)){
+			this.setAnalysisTime(newAnalysis.getAnalysisTime());
+			this.setMessage(newAnalysis.getMessage());
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((analysisJobId == null) ? 0 : analysisJobId.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AnalysisJobDTO other = (AnalysisJobDTO) obj;
+		if (analysisJobId == null) {
+			if (other.analysisJobId != null)
+				return false;
+		} else if (!analysisJobId.equals(other.analysisJobId))
+			return false;
+		return true;
 	}
 	
 	

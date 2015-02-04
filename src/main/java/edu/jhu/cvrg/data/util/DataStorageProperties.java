@@ -75,9 +75,9 @@ public class DataStorageProperties {
 	public static final String HIBERNATE_DB_PASSWORD = "jdbc.default.password";
 	public static final String HIBERNATE_DB_USERNAME = "jdbc.default.username";
 	public static final String HIBERNATE_SHOW_SQL = "hibernate.show_sql";
-	public static final String HIBERNATE_C3P0_MIN_SIZE = "hibernate.c3p0.min_size";
-	public static final String HIBERNATE_C3P0_MAX_SIZE = "hibernate.c3p0.max_size";
-	public static final String HIBERNATE_C3P0_TIMEOUT = "hibernate.c3p0.timeout";
-	public static final String HIBERNATE_C3P0_MAX_STATEMENTS = "hibernate.c3p0.max_statements";
-
+	public static final String HIBERNATE_C3P0_MIN_SIZE = "hibernate.c3p0.minPoolSize";
+	public static final String HIBERNATE_C3P0_MAX_SIZE = "hibernate.c3p0.maxPoolSize";
+	public static final String HIBERNATE_C3P0_TIMEOUT = "hibernate.c3p0.checkoutTimeout";
+	public static final String HIBERNATE_C3P0_MAX_STATEMENTS = "hibernate.c3p0.maxStatementsPerConnection";
+	public static final String HIBERNATE_C3P0_MAX_IDLE_TIME = "hibernate.c3p0.maxIdleTime";
 }

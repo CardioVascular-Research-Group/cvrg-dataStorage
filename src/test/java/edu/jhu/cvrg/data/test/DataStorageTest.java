@@ -15,6 +15,7 @@ import org.junit.runners.MethodSorters;
 import edu.jhu.cvrg.data.dto.AdditionalParametersDTO;
 import edu.jhu.cvrg.data.dto.AlgorithmDTO;
 import edu.jhu.cvrg.data.dto.AnalysisJobDTO;
+import edu.jhu.cvrg.data.dto.AnalysisStatusDTO;
 import edu.jhu.cvrg.data.dto.AnnotationDTO;
 import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.data.dto.FileInfoDTO;
@@ -36,7 +37,7 @@ public class DataStorageTest{
 	
 	private long fileId = 900000L;
 	private long userId = 999999999L;
-	private static Long analysisJobId;
+	private static AnalysisJobDTO analysisJob;
 	private static Long annotationId;
 	
 	@Before
@@ -164,17 +165,17 @@ public class DataStorageTest{
 	@Test
 	public void test0403StoreAnalysis() {
 		try {
-			analysisJobId = dataStorage.storeAnalysisJob(document.getDocumentRecordId(), 2, 0, "http://localhost:8080/axis2/services", "physionetAnalysisService", "chesnokovWrapperType2", new Date(), userId);
+			analysisJob = dataStorage.storeAnalysisJob(document.getDocumentRecordId(), 2, 0, "http://localhost:8080/axis2/services", "physionetAnalysisService", "chesnokovWrapperType2", new Date(), userId);
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
-		Assert.assertTrue(analysisJobId != null);
+		Assert.assertTrue(analysisJob != null);
 	}
 	@Test
 	public void test0404StoreAnalysisFile() {
 		boolean ret = false;
 		try {
-			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(), new long[]{fileId+1,fileId+2}, analysisJobId);
+			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(), new long[]{fileId+1,fileId+2}, analysisJob.getAnalysisJobId());
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
@@ -207,7 +208,7 @@ public class DataStorageTest{
 	public void test0407getAnalysisJobById() {
 		AnalysisJobDTO ret = null;
 		try {
-			ret = dataStorage.getAnalysisJobById(analysisJobId);
+			ret = dataStorage.getAnalysisJobById(analysisJob.getAnalysisJobId());
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
@@ -305,6 +306,22 @@ public class DataStorageTest{
 		
 		Assert.assertTrue(ret);
 	}
+	
+	public void test06getAnalysisStatusByUserAndAnalysisId(){
+		List<AnalysisStatusDTO> ret = null; 
+		try {
+			ret = dataStorage.getAnalysisStatusByUserAndAnalysisId(10405, null);
+		} catch (DataStorageException e) {
+			e.printStackTrace();
+		}
+		
+		if(ret != null){
+			
+			for (AnalysisStatusDTO analysisStatusDTO : ret) {
+				System.out.println(analysisStatusDTO.getDocumentRecordId() + " - " + analysisStatusDTO.getRecordName() + " ("+analysisStatusDTO.getDoneAnalysis()+"/"+analysisStatusDTO.getTotalAnalysis()+")");
+			}
+		}
+	}
 
 	
 	@Test
@@ -315,6 +332,7 @@ public class DataStorageTest{
 	public static void main(String[] args) throws DataStorageException {
 		DataStorageTest test = new DataStorageTest();
 		test.setup();
-		dataStorage.deleteDocumentRecord(999999999L, 2121L);
+		test.test06getAnalysisStatusByUserAndAnalysisId();
+		
 	}
 }

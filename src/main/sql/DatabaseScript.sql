@@ -92,6 +92,8 @@ CREATE TABLE analysisjob
   servicemethod character varying(50) NOT NULL,
   userid bigint NOT NULL,
   dateofanalysis timestamp without time zone NOT NULL,
+  analysistime bigint,
+  message character varying(300),
   CONSTRAINT analysisjob_pk PRIMARY KEY (analysisjobid),
   CONSTRAINT documentrecord_analysisjob_fk FOREIGN KEY (documentrecordid)
       REFERENCES documentrecord (documentrecordid) MATCH SIMPLE
@@ -164,7 +166,7 @@ CREATE TABLE annotationinfo
   startingcoordinateid bigint,
   endingcoordinateid bigint,
   unitofmeasurement character varying(75),
-  description text,
+  description character varying(75),
   value text,
   documentrecordid bigint,
   "timestamp" timestamp without time zone,

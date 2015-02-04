@@ -276,7 +276,9 @@ CREATE TABLE analysisjob (
     servicename character varying(50) NOT NULL,
     servicemethod character varying(50) NOT NULL,
     userid bigint NOT NULL,
-    dateofanalysis timestamp without time zone NOT NULL
+    dateofanalysis timestamp without time zone NOT NULL,
+    analysistime bigint,
+  	message character varying(300)
 );
 
 
@@ -316,7 +318,7 @@ CREATE TABLE annotationinfo (
     startingcoordinateid bigint,
     endingcoordinateid bigint,
     unitofmeasurement character varying(75),
-    description text,
+    description character varying(75),
     value text,
     documentrecordid bigint,
     "timestamp" timestamp without time zone,
@@ -1448,7 +1450,7 @@ SELECT pg_catalog.setval('algorithmperson_algorithmpersonid_seq', 1, false);
 -- Data for Name: analysisjob; Type: TABLE DATA; Schema: public; Owner: liferay
 --
 
-COPY analysisjob (analysisjobid, filecount, documentrecordid, parametercount, serviceurl, servicename, servicemethod, userid, dateofanalysis) FROM stdin;
+COPY analysisjob (analysisjobid, filecount, documentrecordid, parametercount, serviceurl, servicename, servicemethod, userid, dateofanalysis, analysistime, message) FROM stdin;
 \.
 
 

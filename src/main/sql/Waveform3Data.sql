@@ -101,7 +101,7 @@ COPY documentrecord (documentrecordid, recordname, userid, subjectid, originalfo
 -- Data for Name: analysisjob; Type: TABLE DATA; Schema: public; Owner: liferay
 --
 
-COPY analysisjob (analysisjobid, filecount, documentrecordid, parametercount, serviceurl, servicename, servicemethod, userid, dateofanalysis) FROM stdin;
+COPY analysisjob (analysisjobid, filecount, documentrecordid, parametercount, serviceurl, servicename, servicemethod, userid, dateofanalysis, message, analysistime) FROM stdin;
 \.
 
 
