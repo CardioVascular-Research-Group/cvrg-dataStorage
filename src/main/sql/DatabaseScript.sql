@@ -166,7 +166,7 @@ CREATE TABLE annotationinfo
   startingcoordinateid bigint,
   endingcoordinateid bigint,
   unitofmeasurement character varying(75),
-  description character varying(75),
+  description text,
   value text,
   documentrecordid bigint,
   "timestamp" timestamp without time zone,
