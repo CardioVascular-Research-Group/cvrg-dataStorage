@@ -13,12 +13,14 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
 
 import edu.jhu.cvrg.data.dto.AdditionalParametersDTO;
 import edu.jhu.cvrg.data.dto.AlgorithmDTO;
 import edu.jhu.cvrg.data.dto.AnalysisJobDTO;
+import edu.jhu.cvrg.data.dto.AnalysisStatusDTO;
 import edu.jhu.cvrg.data.dto.AnnotationDTO;
 import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.data.dto.FileInfoDTO;
@@ -89,17 +91,18 @@ public class HibernateConnection extends Connection {
 				
 
 				
-				cfg.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL82Dialect");
-				cfg.setProperty("hibernate.connection.username", props.getProperty(DataStorageProperties.HIBERNATE_DB_USERNAME));
-				cfg.setProperty("hibernate.connection.password", props.getProperty(DataStorageProperties.HIBERNATE_DB_PASSWORD));
-				cfg.setProperty("hibernate.connection.driver_class", props.getProperty(DataStorageProperties.HIBERNATE_DRIVER_CLASS));
-				cfg.setProperty("hibernate.connection.url", props.getProperty(DataStorageProperties.HIBERNATE_DB_URL));
+				cfg.setProperty(Environment.DIALECT, "org.hibernate.dialect.PostgreSQL82Dialect");
+				cfg.setProperty(Environment.USER, props.getProperty(DataStorageProperties.HIBERNATE_DB_USERNAME));
+				cfg.setProperty(Environment.PASS, props.getProperty(DataStorageProperties.HIBERNATE_DB_PASSWORD));
+				cfg.setProperty(Environment.DRIVER, props.getProperty(DataStorageProperties.HIBERNATE_DRIVER_CLASS));
+				cfg.setProperty(Environment.URL, props.getProperty(DataStorageProperties.HIBERNATE_DB_URL));
 				
-				cfg.setProperty("hibernate.show_sql", props.getProperty(DataStorageProperties.HIBERNATE_SHOW_SQL));
-				cfg.setProperty("hibernate.c3p0.min_size", props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MIN_SIZE));
-				cfg.setProperty("hibernate.c3p0.max_size", props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MAX_SIZE));
-				cfg.setProperty("hibernate.c3p0.timeout", props.getProperty(DataStorageProperties.HIBERNATE_C3P0_TIMEOUT));
-				cfg.setProperty("hibernate.c3p0.max_statements", props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MAX_STATEMENTS));
+				cfg.setProperty(Environment.SHOW_SQL, props.getProperty(DataStorageProperties.HIBERNATE_SHOW_SQL));
+				
+				cfg.setProperty(Environment.C3P0_MIN_SIZE, props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MIN_SIZE));
+				cfg.setProperty(Environment.C3P0_MAX_SIZE, props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MAX_SIZE));
+				cfg.setProperty(Environment.C3P0_TIMEOUT, props.getProperty(DataStorageProperties.HIBERNATE_C3P0_TIMEOUT));
+				cfg.setProperty(Environment.C3P0_MAX_STATEMENTS, props.getProperty(DataStorageProperties.HIBERNATE_C3P0_MAX_STATEMENTS));
 				
 				ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(cfg.getProperties()).buildServiceRegistry();        
 			    sessionFactory = cfg.buildSessionFactory(serviceRegistry);
@@ -356,28 +359,29 @@ public class HibernateConnection extends Connection {
 	
 	
 	@Override
-	public Long storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException{
+	public AnalysisJobDTO storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException{
 		
-		Long analysisJobId = null;
+		AnalysisJobDTO job = null;
 		
 		try {
 			Session session = sessionFactory.openSession();
 			
 			session.beginTransaction();
 			
-			AnalysisJob job = new AnalysisJob(null, documentRecord, fileCount, parameterCount, serviceUrl, serviceName, serviceMethod, dateOfAnalysis, userId);
+			AnalysisJob entity = new AnalysisJob(null, documentRecord, fileCount, parameterCount, serviceUrl, serviceName, serviceMethod, dateOfAnalysis, userId);
 			
-			session.save(job);
+			session.save(entity);
 			
 			session.getTransaction().commit();
 			session.close();
 			
-			analysisJobId = job.getAnalysisJobId();
+			job = new AnalysisJobDTO(entity.getAnalysisJobId(), entity.getDocumentRecordId(), entity.getFileCount(), entity.getParameterCount(), entity.getServiceName(), entity.getServiceUrl(), entity.getServiceMethod(), entity.getDateOfAnalysis(), entity.getUserId(), entity.getAnalysisTime(), entity.getMessage());
+			
 		} catch (HibernateException e) {
 			throw new DataStorageException(e);
 		}
 		
-		return analysisJobId;
+		return job;
 	}
 
 	@Override
@@ -397,7 +401,7 @@ public class HibernateConnection extends Connection {
 			
 			if(l.size() > 0){
 				AnalysisJob entity = l.get(0);
-				ret = new AnalysisJobDTO(entity.getAnalysisJobId(), entity.getDocumentRecordId(), entity.getFileCount(), entity.getParameterCount(), entity.getServiceName(), entity.getServiceUrl(), entity.getServiceMethod(), entity.getDateOfAnalysis(), entity.getUserId());
+				ret = new AnalysisJobDTO(entity.getAnalysisJobId(), entity.getDocumentRecordId(), entity.getFileCount(), entity.getParameterCount(), entity.getServiceName(), entity.getServiceUrl(), entity.getServiceMethod(), entity.getDateOfAnalysis(), entity.getUserId(), entity.getAnalysisTime(), entity.getMessage());
 			}
 			session.close();
 		} catch (HibernateException e) {
@@ -1529,5 +1533,134 @@ public class HibernateConnection extends Connection {
 		
 		return ret;
 	}
+
+	@Override
+	public List<AnalysisJobDTO> getAnalysisJobByUser(long userId) throws DataStorageException {
+		List<AnalysisJobDTO> ret = new ArrayList<AnalysisJobDTO>();
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select a from AnalysisJob a where a.userId = :userid and a.analysisTime is null order by a.analysisJobId desc");
+			
+			q.setParameter("userid", userId);
+			
+			@SuppressWarnings("unchecked")
+			List<AnalysisJob> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				AnalysisJob entity = l.get(i);
+				ret.add(new AnalysisJobDTO(entity.getAnalysisJobId(), entity.getDocumentRecordId(), entity.getFileCount(), entity.getParameterCount(), entity.getServiceName(), entity.getServiceUrl(), entity.getServiceMethod(), entity.getDateOfAnalysis(), entity.getUserId(), entity.getAnalysisTime(), entity.getMessage()));
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
+	@Override
+	public boolean updateAnalysisStatus(long analysisJobId, Long analysisTime, String message) throws DataStorageException {
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			AnalysisJob entity = null;
+			
+			entity = (AnalysisJob) session.load(AnalysisJob.class, analysisJobId);
+			
+			if(analysisTime != null){
+				entity.setAnalysisTime(analysisTime);	
+			}
+			
+			if(message != null){
+				entity.setMessage(message);
+			}
+			
+			session.persist(entity);
+			
+			session.getTransaction().commit();
+			session.close();
+			
+			return true;
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		
+	}
+	
+	public List<AnalysisStatusDTO> getAnalysisStatusByUserAndAnalysisId(long userId, Set<Long> analysisIds) throws DataStorageException{
+		
+		List<AnalysisStatusDTO> ret = null;
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			StringBuilder hql = new StringBuilder();
+			hql.append(" select d.documentRecordId, d.recordName, count(a.analysisJobId), count( a.analysisTime ), count( a.message ) from DocumentRecord d inner join d.analysisJobs a with ( a.userId = :userId ");
+			
+			
+			if(analysisIds != null){
+				hql.append(" and a.analysisJobId in (:analysisIds) ");
+			}
+			
+			hql.append(") group by d.documentRecordId order by d.recordName ");
+
+			Query q = session.createQuery(hql.toString());
+			q.setParameter("userId", userId);
+			
+			if(analysisIds != null){
+				q.setParameterList("analysisIds", analysisIds);	
+			}
+			
+			List<Object[]> entities = q.list();
+			
+			if(entities != null && !entities.isEmpty()){
+				ret = new ArrayList<AnalysisStatusDTO>();
+				
+				hql = new StringBuilder();
+				hql.append("select a from AnalysisJob a where a.userId = :userId and a.documentRecordId = :docId ");
+				if(analysisIds != null){
+					hql.append(" and a.analysisJobId in (:analysisIds) ");
+				}
+				q = session.createQuery(hql.toString());
+				q.setParameter("userId", userId);
+				if(analysisIds != null){
+					q.setParameterList("analysisIds", analysisIds);	
+				}
+								
+				for (Object[] entity : entities) {
+					AnalysisStatusDTO dto = new AnalysisStatusDTO((Long) entity[0], entity[1].toString(), ((Long) entity[2]).intValue(), ((Long) entity[3]).intValue(), ((Long) entity[4]).intValue());
+					
+					q.setParameter("docId", dto.getDocumentRecordId());
+					List<AnalysisJob> analysis = q.list();
+					if(analysis != null && analysis.size() > 0){
+						List<String> messages = new ArrayList<String>();
+						List<Long> ids = new ArrayList<Long>();
+						for (AnalysisJob a : analysis) {
+							messages.add(a.getMessage());
+							ids.add(a.getAnalysisJobId());
+							
+						}
+						dto.setMessages(messages);
+						dto.setAnalysisIds(ids);
+					}
+				
+					ret.add(dto);
+				}
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		return ret;
+	}
+	
 	
 }

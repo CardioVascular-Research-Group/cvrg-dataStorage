@@ -40,6 +40,8 @@ public class AnalysisJob implements java.io.Serializable {
 	private String serviceMethod;
 	private Date dateOfAnalysis;
 	private long userId;
+	private Long analysisTime;
+	private String message; 
 	private List<FileInfo> filesInfo = new ArrayList<FileInfo>(0);
 
 	public AnalysisJob() {
@@ -57,6 +59,8 @@ public class AnalysisJob implements java.io.Serializable {
 		this.serviceMethod = servicemethod;
 		this.dateOfAnalysis = dateOfAnalysis;
 		this.userId = userId;
+		this.analysisJobId = null;
+		this.message = null;
 	}
 
 	@Id
@@ -161,5 +165,23 @@ public class AnalysisJob implements java.io.Serializable {
 
 	public void setFilesInfo(List<FileInfo> filesinfo) {
 		this.filesInfo = filesinfo;
+	}
+	
+	@Column(name = "message", length = 300)
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	@Column(name = "analysistime")
+	public Long getAnalysisTime() {
+		return analysisTime;
+	}
+
+	public void setAnalysisTime(Long analysisTime) {
+		this.analysisTime = analysisTime;
 	}
 }
