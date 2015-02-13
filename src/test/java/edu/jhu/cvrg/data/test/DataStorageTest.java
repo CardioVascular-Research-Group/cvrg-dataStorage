@@ -45,7 +45,7 @@ public class DataStorageTest{
 		try {
 			if(dataStorage == null){
 				dataStorage = ConnectionFactory.createConnection();
-				document = new DocumentRecordDTO(null, "testRecord.xml", userId, "testSubject", FileType.PHILIPS_104, 125.00, "/999999999/testFolder/testRecord", 12, 13400874, new Date(), 71, "Unknown", null, 200.00);
+				document = new DocumentRecordDTO(null, "testRecord.xml", userId, "testSubject", FileType.PHILIPS_104, 125.00, "/999999999/testFolder/testRecord", 12, 13400874, new Date(), 71, "Unknown", null, 200.00, null);
 			}
 		} catch (DataStorageException e) {
 			e.printStackTrace();
@@ -105,7 +105,7 @@ public class DataStorageTest{
 		try {
 			long[] filesId = new long[]{fileId};
 			
-			documentRecordId = dataStorage.storeDocument(document.getUserId(), document.getRecordName(), document.getSubjectId(), document.getOriginalFormat().ordinal(), document.getSamplingRate(), document.getFileTreePath(), document.getLeadCount(), document.getNumberOfPoints(), null, document.getAge(), document.getGender(), null, document.getAduGain(), filesId);
+			documentRecordId = dataStorage.storeDocument(document.getUserId(), document.getRecordName(), document.getSubjectId(), document.getOriginalFormat().ordinal(), document.getSamplingRate(), document.getFileTreePath(), document.getLeadCount(), document.getNumberOfPoints(), null, document.getAge(), document.getGender(), null, document.getAduGain(), filesId, document.getLeadNames());
 			document.setDocumentRecordId(documentRecordId);
 			
 		} catch (DataStorageException e) {

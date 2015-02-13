@@ -40,7 +40,7 @@ public abstract class Connection {
 	protected abstract void init() throws DataStorageException;
 	public abstract void close();
 	
-	public abstract Long storeDocument(long userID, String recordName, String subjectID, int originalFormat, double samplingRate, String fileTreePath, int leadCount, int numPoints, Calendar dateUploaded, int age, String gender, Calendar dateRecorded, double aduGain, long[] filesId) throws DataStorageException;
+	public abstract Long storeDocument(long userID, String recordName, String subjectID, int originalFormat, double samplingRate, String fileTreePath, int leadCount, int numPoints, Calendar dateUploaded, int age, String gender, Calendar dateRecorded, double aduGain, long[] filesId, String leadNames) throws DataStorageException;
 	public abstract Long storeAnnotations(Set<AnnotationDTO> annotSet) throws DataStorageException;
 	public abstract Long storeAnnotation(AnnotationDTO annotation) throws DataStorageException;
 	public abstract boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId) throws DataStorageException;

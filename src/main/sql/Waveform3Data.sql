@@ -91,7 +91,7 @@ SELECT pg_catalog.setval('algorithmperson_algorithmpersonid_seq', 1, false);
 -- Data for Name: documentrecord; Type: TABLE DATA; Schema: public; Owner: liferay
 --
 
-COPY documentrecord (documentrecordid, recordname, userid, subjectid, originalformat, samplingrate, filetreepath, leadcount, numberofpoints, dateofupload, age, gender, dateofrecording, adugain) FROM stdin;
+COPY documentrecord (documentrecordid, recordname, userid, subjectid, originalformat, samplingrate, filetreepath, leadcount, numberofpoints, dateofupload, age, gender, dateofrecording, adugain, leadNames) FROM stdin;
 \.
 
 

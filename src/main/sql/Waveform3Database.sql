@@ -395,7 +395,8 @@ CREATE TABLE documentrecord (
     age integer,
     gender character varying(75),
     dateofrecording timestamp without time zone,
-    adugain double precision
+    adugain double precision,
+    leadNames character varying(100)
 );
 
 
@@ -1507,7 +1508,7 @@ SELECT pg_catalog.setval('coordinate_sequence', 61353, false);
 -- Data for Name: documentrecord; Type: TABLE DATA; Schema: public; Owner: liferay
 --
 
-COPY documentrecord (documentrecordid, recordname, userid, subjectid, originalformat, samplingrate, filetreepath, leadcount, numberofpoints, dateofupload, age, gender, dateofrecording, adugain) FROM stdin;
+COPY documentrecord (documentrecordid, recordname, userid, subjectid, originalformat, samplingrate, filetreepath, leadcount, numberofpoints, dateofupload, age, gender, dateofrecording, adugain,leadNames) FROM stdin;
 \.
 
 

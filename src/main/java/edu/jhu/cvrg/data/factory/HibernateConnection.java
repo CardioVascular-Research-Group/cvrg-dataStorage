@@ -123,7 +123,7 @@ public class HibernateConnection extends Connection {
 	public Long storeDocument(long userID, String recordName, String subjectID, int originalFormat,
 			double samplingRate, String fileTreePath, int leadCount,
 			int numPoints, Calendar dateUploaded, int age, String gender,
-			Calendar dateRecorded, double aduGain, long[] filesId) throws DataStorageException {
+			Calendar dateRecorded, double aduGain, long[] filesId, String leadNames) throws DataStorageException {
 		
 		Long documentId = null;
 		
@@ -136,7 +136,7 @@ public class HibernateConnection extends Connection {
 														dateUploaded != null ? dateUploaded.getTime() : null, 
 														age, gender, 
 														dateRecorded != null ? dateRecorded.getTime():null, 
-														aduGain);
+														aduGain, leadNames);
 			
 			session.save(record);
 			
@@ -428,7 +428,7 @@ public class HibernateConnection extends Connection {
 			
 			if(l.size() > 0){
 				DocumentRecord entity = l.get(0);
-				ret = new DocumentRecordDTO(entity.getDocumentRecordId(), entity.getRecordName(), entity.getUserId(), entity.getSubjectId(), FileType.getTypeById(entity.getOriginalFormat()), entity.getSamplingRate(), entity.getFileTreePath(),entity.getLeadCount(), entity.getNumberOfPoints(), entity.getDateOfUpload(), entity.getAge(), entity.getGender(), entity.getDateOfRecording(), entity.getAduGain());
+				ret = new DocumentRecordDTO(entity.getDocumentRecordId(), entity.getRecordName(), entity.getUserId(), entity.getSubjectId(), FileType.getTypeById(entity.getOriginalFormat()), entity.getSamplingRate(), entity.getFileTreePath(),entity.getLeadCount(), entity.getNumberOfPoints(), entity.getDateOfUpload(), entity.getAge(), entity.getGender(), entity.getDateOfRecording(), entity.getAduGain(), entity.getLeadNames());
 			}
 			session.close();
 		} catch (HibernateException e) {

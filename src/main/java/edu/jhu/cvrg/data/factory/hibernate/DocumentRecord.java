@@ -81,6 +81,9 @@ public class DocumentRecord implements java.io.Serializable {
 	
 	@Column(name = "adugain", precision = 17, scale = 17)
 	private Double aduGain;
+
+	@Column(name = "leadNames", length = 100)
+	private String leadNames;
 	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "documentRecord", cascade={CascadeType.REMOVE})
 	private UploadStatus uploadStatus;
@@ -105,7 +108,7 @@ public class DocumentRecord implements java.io.Serializable {
 			Long userid, String subjectid, Integer originalformat,
 			Double samplingrate, String filetreepath, Integer leadcount,
 			Integer numberofpoints, Date dateofupload, Integer age,
-			String gender, Date dateofrecording, Double adugain) {
+			String gender, Date dateofrecording, Double adugain, String leadNames) {
 		this.documentRecordId = documentrecordid;
 		this.recordName = recordname;
 		this.userId = userid;
@@ -120,6 +123,7 @@ public class DocumentRecord implements java.io.Serializable {
 		this.gender = gender;
 		this.dateOfRecording = dateofrecording;
 		this.aduGain = adugain;
+		this.leadNames = leadNames;
 	}
 
 	public Long getDocumentRecordId() {
@@ -264,6 +268,14 @@ public class DocumentRecord implements java.io.Serializable {
 
 	public void setFilesInfo(List<FileInfo> filesinfo) {
 		this.filesInfo = filesinfo;
+	}
+
+	public String getLeadNames() {
+		return leadNames;
+	}
+
+	public void setLeadNames(String leadNames) {
+		this.leadNames = leadNames;
 	}
 
 }

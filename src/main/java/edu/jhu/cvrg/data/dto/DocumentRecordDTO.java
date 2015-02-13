@@ -26,12 +26,13 @@ public class DocumentRecordDTO implements Serializable{
 	private String gender;
 	private Date dateOfRecording;
 	private Double aduGain;
+	private String leadNames;
 	
 	public DocumentRecordDTO(Long documentRecordId, String recordName,
 			Long userId, String subjectId, FileType originalFormat,
 			Double samplingRate, String fileTreePath, Integer leadCount,
 			Integer numberOfPoints, Date dateOfUpload, Integer age,
-			String gender, Date dateOfRecording, Double aduGain) {
+			String gender, Date dateOfRecording, Double aduGain, String leadNames) {
 		super();
 		this.documentRecordId = documentRecordId;
 		this.recordName = recordName;
@@ -47,6 +48,7 @@ public class DocumentRecordDTO implements Serializable{
 		this.gender = gender;
 		this.dateOfRecording = dateOfRecording;
 		this.aduGain = aduGain;
+		this.leadNames = leadNames;
 	}
 	
 	public Long getDocumentRecordId() {
@@ -153,6 +155,10 @@ public class DocumentRecordDTO implements Serializable{
 	
 	public int getSamplesPerChannel(){
 		return this.numberOfPoints / this.leadCount;
+	}
+
+	public String getLeadNames() {
+		return leadNames;
 	}
 
 }

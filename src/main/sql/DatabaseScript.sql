@@ -51,6 +51,7 @@ CREATE TABLE documentrecord
   gender character varying(75),
   dateofrecording timestamp without time zone,
   adugain double precision,
+  leadNames character varying(100),
   CONSTRAINT documentrecord_pk PRIMARY KEY (documentrecordid)
 )
 WITH (
