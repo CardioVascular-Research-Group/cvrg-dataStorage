@@ -12,24 +12,21 @@ to tell it to use the "waveform3" database.
 
 To create the waveform3 database, run the following script from the Unix command line:
 su postgres
-
-Creates the "waveform3" database.
 psql -f (location of src/main/sql/CreateWaveform3Database.sql) 
 
-To run configure the database, run the following three scripts from the Unix command line:
-su postgres
+Then to run configure the database, run the following three scripts:
 
-Drops and then Adds the non-algorithm SEQUENCE, INDEX, and TABLE elements. 
-psql -f (location of src/main/sql/DatabaseScript.sql) –d waveform3
+1) Drops and then Adds the non-algorithm SEQUENCE, INDEX, and TABLE elements. 
+psql -d waveform3 -f (location of src/main/sql/DatabaseScript.sql)
 
-Adds the algorithm specific SEQUENCE, INDEX, and TABLE elements, plus documentation.
-psql -f (location of src/main/sql/Waveform3DatabaseAlgorithmOnly.sql) –d waveform3
+2) Adds the algorithm specific SEQUENCE, INDEX, and TABLE elements, plus documentation.
+psql -d waveform3 -f (location of src/main/sql/Waveform3DatabaseAlgorithmOnly.sql)
 
-Inserts the current algorithm description data, which is used by the Analysis portlet to build the UI and to execute analyses.
-psql -f (location of src/main/sql/Waveform3DataAlgorithmOnly.sql) –d waveform3
+3) Inserts the current algorithm description data, which is used by the Analysis portlet to build the UI and to execute analyses.
+psql -d waveform3 -f (location of src/main/sql/Waveform3DataAlgorithmOnly.sql)
 
-Optional, drops algorithm specific TABLE elements. Used it database schema has been updated.
-psql -f (location of src/main/sql/Waveform3DropAlgorithmOnly.sql) –d waveform3
+Optional, this script drops algorithm specific TABLE elements. Used it database schema has been updated.
+psql -d waveform3 -f (location of src/main/sql/Waveform3DropAlgorithmOnly.sql)
 
 ## Dependencies
 
