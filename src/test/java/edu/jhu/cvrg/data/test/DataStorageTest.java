@@ -61,7 +61,7 @@ public class DataStorageTest{
 			dtos =  dataStorage.getAvailableAlgorithmList(0L);
 			
 			if(dtos != null && !dtos.isEmpty()){
-				algorithm = dtos.get(0);	
+				algorithm = dtos.get(1);	
 			}
 		} catch (DataStorageException e) {
 			e.printStackTrace();
