@@ -258,7 +258,7 @@ public class AnnotationInfo implements java.io.Serializable {
 		this.description = description;
 	}
 
-	@Column(name = "value", length = 75)
+	@Column(name = "value")
 	public String getValue() {
 		return this.value;
 	}

@@ -1609,7 +1609,7 @@ public class HibernateConnection extends Connection {
 				hql.append(" and a.analysisJobId in (:analysisIds) ");
 			}
 			
-			hql.append(") group by d.documentRecordId order by d.recordName ");
+			hql.append(") group by d.documentRecordId, d.recordName order by d.recordName ");
 
 			Query q = session.createQuery(hql.toString());
 			q.setParameter("userId", userId);
