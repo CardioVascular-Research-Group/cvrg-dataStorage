@@ -42,13 +42,17 @@ public class DataStorageTest{
 	
 	@Before
 	public void setup() {
+		System.out.println("************** DataStorageTest setup() ************ ");
 		try {
 			if(dataStorage == null){
 				dataStorage = ConnectionFactory.createConnection();
 				document = new DocumentRecordDTO(null, "testRecord.xml", userId, "testSubject", FileType.PHILIPS_104, 125.00, "/999999999/testFolder/testRecord", 12, 13400874, new Date(), 71, "Unknown", null, 200.00, null);
+System.out.println("document: " + document);
 			}
 		} catch (DataStorageException e) {
 			e.printStackTrace();
+		}catch (Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	
@@ -56,10 +60,8 @@ public class DataStorageTest{
 	@Test
 	public void test01getAvailableAlgorithmList() {
 		List<AlgorithmDTO> dtos =  null;
-		
 		try {
 			dtos =  dataStorage.getAvailableAlgorithmList(0L);
-			
 			if(dtos != null && !dtos.isEmpty()){
 				algorithm = dtos.get(1);	
 			}
