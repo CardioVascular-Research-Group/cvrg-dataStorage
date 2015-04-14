@@ -6,8 +6,9 @@ With these classes you will manage the waveform 3 data, at the storage environme
 
 	Relational data base with hibernate
 
-Make sure that /opt/liferay/waveform3/tomcat-7.0.27/conf/dbutilities.properties contains the following line:
+Make sure that /opt/liferay/waveform3/tomcat-7.0.27/conf/dbutility.properties contains the following line:
 	"jdbc.default.url=jdbc:postgresql://localhost:5432/waveform3"
+copy the other 16 lines from the Integration server.
 to tell it to use the "waveform3" database.
 
 To create the waveform3 database, run the following script from the Unix command line:
