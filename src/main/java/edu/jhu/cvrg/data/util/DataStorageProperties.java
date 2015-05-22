@@ -51,6 +51,7 @@ public class DataStorageProperties {
 			}
 			
 		} catch (FileNotFoundException e) {
+			log.error("DataStorage properties file not found: " + propertiesFile );
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
