@@ -1578,6 +1578,9 @@ public class HibernateConnection extends Connection {
 			}
 			
 			if(message != null){
+				if (message.length()<300) {
+					message = message.substring(0, 295) + "...";
+				}
 				entity.setMessage(message);
 			}
 			
