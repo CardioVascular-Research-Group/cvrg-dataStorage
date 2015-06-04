@@ -173,8 +173,10 @@ public class AnalysisJob implements java.io.Serializable {
 	}
 
 	public void setMessage(String message) {
-		if (message.length()<300) {
-			message = message.substring(0, 295) + "...";
+		if (message != null){
+			if (message.length()<300) {
+				message = message.substring(0, 295) + "...";
+			}
 		}
 		this.message = message;
 	}
