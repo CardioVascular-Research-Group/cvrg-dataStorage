@@ -2,10 +2,12 @@ package edu.jhu.cvrg.data.factory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.hibernate.HibernateException;
 import org.hibernate.ObjectNotFoundException;
@@ -27,6 +29,7 @@ import edu.jhu.cvrg.data.dto.FileInfoDTO;
 import edu.jhu.cvrg.data.dto.ParameterValidatorDTO;
 import edu.jhu.cvrg.data.dto.ServiceDTO;
 import edu.jhu.cvrg.data.dto.UploadStatusDTO;
+import edu.jhu.cvrg.data.dto.VirtualNodeDTO;
 import edu.jhu.cvrg.data.enums.DataStorageType;
 import edu.jhu.cvrg.data.enums.FileType;
 import edu.jhu.cvrg.data.enums.UploadState;
@@ -47,6 +50,8 @@ import edu.jhu.cvrg.data.factory.hibernate.ParameterValidator;
 import edu.jhu.cvrg.data.factory.hibernate.Person;
 import edu.jhu.cvrg.data.factory.hibernate.Service;
 import edu.jhu.cvrg.data.factory.hibernate.UploadStatus;
+import edu.jhu.cvrg.data.factory.hibernate.VirtualDocument;
+import edu.jhu.cvrg.data.factory.hibernate.VirtualNode;
 import edu.jhu.cvrg.data.util.DataStorageException;
 import edu.jhu.cvrg.data.util.DataStorageProperties;
 
@@ -76,6 +81,8 @@ public class HibernateConnection extends Connection {
 				cfg.addAnnotatedClass(FileInfo.class);
 				cfg.addAnnotatedClass(UploadStatus.class);
 				cfg.addAnnotatedClass(AnalysisJob.class);
+				cfg.addAnnotatedClass(VirtualNode.class);
+				cfg.addAnnotatedClass(VirtualDocument.class);
 
 				cfg.addAnnotatedClass(Service.class);
 				cfg.addAnnotatedClass(Parameter.class);
@@ -300,6 +307,35 @@ public class HibernateConnection extends Connection {
 		
 		return ret;
 	}
+	
+	@Override
+	public List<FileInfoDTO> getAllFilesReferenceByUser(long userId) throws DataStorageException {
+		
+		List<FileInfoDTO> ret = new ArrayList<FileInfoDTO>();
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select d.documentRecord.filesInfo from VirtualDocument d where d.userId = :userid");
+			
+			q.setParameter("userid", userId);
+			
+			@SuppressWarnings("unchecked")
+			List<FileInfo> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				FileInfo entity = l.get(i);
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
 	
 	@Override
 	public List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException {
@@ -1578,6 +1614,9 @@ public class HibernateConnection extends Connection {
 			}
 			
 			if(message != null){
+				if (message.length()>300) {
+					message = message.substring(0, 295) + "...";
+				}
 				entity.setMessage(message);
 			}
 			
@@ -1659,6 +1698,225 @@ public class HibernateConnection extends Connection {
 		} catch (HibernateException e) {
 			throw new DataStorageException(e);
 		}
+		return ret;
+	}
+
+	@Override
+	public Long storeVirtualNode(long userId, String nodeName, String externalReference, Long parentNode) throws DataStorageException {
+		Long nodeId = null;
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			VirtualNode record = new VirtualNode(externalReference, nodeName, userId, parentNode);
+			
+			session.save(record);
+			
+			session.getTransaction().commit();
+			session.close();
+			
+			nodeId = record.getNodeId();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return nodeId;
+	}
+	
+	@Override
+	public Long storeVirtualDocument(long userId, long documentRecordId, long virtualNodeId, String virtualDocumentName) throws DataStorageException {
+		Long virtalDocId = null;
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			VirtualDocument record = new VirtualDocument(virtualNodeId, documentRecordId, userId, virtualDocumentName);
+			
+			session.save(record);
+			
+			session.getTransaction().commit();
+			session.close();
+			
+			virtalDocId = record.getVirtualDocumentId();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return virtalDocId;
+	}
+
+	public void updateVirtualDocumentReferences(long documentRecordId, String virtualDocumentName) throws DataStorageException {
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			Query q = session.createQuery("select n from VirtualNode n left outer join n.virtualDocuments d where n.nodeName = :nodeName and n.parentnodeId is not null and d.virtualDocumentId is null");
+			
+			q.setParameter("nodeName", virtualDocumentName);
+			
+			List<VirtualNode> nodes = q.list();
+			
+			for (VirtualNode virtualNode : nodes) {
+				List<VirtualDocument> docs = virtualNode.getVirtualDocuments();
+				if(docs == null || docs.isEmpty()){
+					session.save(new VirtualDocument(virtualNode.getNodeId(), documentRecordId, virtualNode.getUserId(), virtualDocumentName));		
+				}
+			}
+			
+			session.getTransaction().commit();
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+	}
+	
+	
+	
+	@Override
+	public Collection<VirtualNodeDTO> getAllVirtualNodesByUser(long userId) throws DataStorageException {
+		Collection<VirtualNodeDTO> ret = null;
+		
+		try {
+			
+			TreeMap<Long, VirtualNodeDTO> mapNodes = new TreeMap<Long, VirtualNodeDTO>();
+			
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select n from VirtualNode n where n.userId = :userid order by n.parentnodeId desc");
+			
+			q.setParameter("userid", userId);
+			
+			List<VirtualNode> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				VirtualNode entity = l.get(i);
+				VirtualNodeDTO dto = new VirtualNodeDTO(entity.getNodeId(), entity.getNodeName(), entity.getExternalReference(), true);
+				
+				if(entity.getParentnodeId() != null){
+					VirtualNodeDTO parentNode = mapNodes.get(entity.getParentnodeId());
+					parentNode.addChild(dto);
+					
+					dto.setChildren(this.getVirtualDocuments(entity.getNodeId(), userId));
+					
+				}else{
+					mapNodes.put(entity.getNodeId(), dto);
+				}
+			}
+			
+			ret = mapNodes.values();
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+
+
+	private List<VirtualNodeDTO> getVirtualDocuments(Long virtualNodeId, long userId)throws DataStorageException {
+		List<VirtualNodeDTO> ret = null;
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			String hql = "select n from VirtualDocument n where n.userId = :userid";
+			
+			if(virtualNodeId != null){
+				hql += " and n.id.virtualNodeId = :virtualNodeId";
+			}
+			
+			Query q = session.createQuery(hql);
+			
+			q.setParameter("userid", userId);
+			
+			if(virtualNodeId != null){
+				q.setParameter("virtualNodeId", virtualNodeId);	
+			}
+			
+			List<VirtualDocument> l = q.list();
+			
+			if(!l.isEmpty()){
+				ret = new ArrayList<VirtualNodeDTO>();
+				for (int i = 0; i < l.size(); i++) {
+					VirtualDocument entity = l.get(i);
+					ret.add(new VirtualNodeDTO(entity.getDocumentRecordId(), entity.getVirtualDocumentName(), null, false));
+				}
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			log.error("Error on retrive the Virtual Documents for user " + userId + ". Message: " + e.getMessage());
+			return null;
+		}
+		
+		return ret;
+	}
+
+	@Override
+	public DocumentRecordDTO getDocumentRecordBySubjectId(String subjectId, boolean shared) throws DataStorageException {
+		
+		DocumentRecordDTO ret = null;
+		
+		try {
+			String hql = "select d from DocumentRecord d where d.subjectId = :subjectId";
+			
+			if(shared){
+				hql += " and d.fileTreePath = :treepath";
+			}else{
+				hql += " and d.fileTreePath != :treepath";
+			}
+			
+			Session session = sessionFactory.openSession();
+			Query q = session.createQuery(hql);
+			
+			q.setParameter("subjectId", subjectId);
+			q.setParameter("treepath", "Eureka");
+			
+			@SuppressWarnings("unchecked")
+			List<DocumentRecord> l = q.list();
+			
+			if(l.size() > 0){
+				DocumentRecord entity = l.get(0);
+				ret = new DocumentRecordDTO(entity.getDocumentRecordId(), entity.getRecordName(), entity.getUserId(), entity.getSubjectId(), FileType.getTypeById(entity.getOriginalFormat()), entity.getSamplingRate(), entity.getFileTreePath(),entity.getLeadCount(), entity.getNumberOfPoints(), entity.getDateOfUpload(), entity.getAge(), entity.getGender(), entity.getDateOfRecording(), entity.getAduGain(), entity.getLeadNames());
+			}
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
+	@Override
+	public boolean deleteVirtualNode(long userId, long nodeId) throws DataStorageException{
+		
+		boolean ret = false;
+		
+		try{
+			Session session = sessionFactory.openSession();		
+			
+			VirtualNode entity = (VirtualNode) session.get(VirtualNode.class, nodeId);
+			
+			if(entity != null && entity.getUserId().equals(userId)){
+				session.beginTransaction();
+				
+				session.delete(entity);
+				
+				session.getTransaction().commit();
+				session.close();
+				ret = true;
+			}else{
+				throw new DataStorageException("The Node("+nodeId+") not exist for this user");	
+			}
+						
+		}catch(HibernateException ex){
+			throw new DataStorageException(ex);
+		}
+		
 		return ret;
 	}
 	

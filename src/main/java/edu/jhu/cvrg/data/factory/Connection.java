@@ -2,6 +2,7 @@ package edu.jhu.cvrg.data.factory;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -17,6 +18,7 @@ import edu.jhu.cvrg.data.dto.DocumentRecordDTO;
 import edu.jhu.cvrg.data.dto.FileInfoDTO;
 import edu.jhu.cvrg.data.dto.ServiceDTO;
 import edu.jhu.cvrg.data.dto.UploadStatusDTO;
+import edu.jhu.cvrg.data.dto.VirtualNodeDTO;
 import edu.jhu.cvrg.data.enums.DataStorageType;
 import edu.jhu.cvrg.data.enums.UploadState;
 import edu.jhu.cvrg.data.util.DataStorageException;
@@ -53,6 +55,7 @@ public abstract class Connection {
 	public abstract List<AnalysisStatusDTO> getAnalysisStatusByUserAndAnalysisId(long userId, Set<Long> analysisIds) throws DataStorageException;
 	
 	public abstract List<FileInfoDTO> getAllFilesByUser(long userId) throws DataStorageException;
+	public abstract List<FileInfoDTO> getAllFilesReferenceByUser(long userId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getAllFilesByDocumentRecordId(long docId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException;
 	public abstract List<AnalysisJobDTO> getAnalysisJobByUser(long userId) throws DataStorageException;
@@ -65,6 +68,13 @@ public abstract class Connection {
 	
 	public abstract boolean deleteDocumentRecord(long userId, long documentRecordId) throws DataStorageException;
 	public abstract boolean deleteAllFilesByDocumentRecordId(long documentRecordId) throws DataStorageException;
+	
+	public abstract Collection<VirtualNodeDTO> getAllVirtualNodesByUser(long userId) throws DataStorageException;
+	public abstract Long storeVirtualNode(long userId, String nodeName, String externalReference, Long parentNode) throws DataStorageException;
+	public abstract Long storeVirtualDocument(long userId, long documentRecordId, long virtualNodeId, String virtualDocumentName) throws DataStorageException;
+	public abstract DocumentRecordDTO getDocumentRecordBySubjectId(String subjectId, boolean shared) throws DataStorageException;
+	public abstract boolean deleteVirtualNode(long userId, long nodeId) throws DataStorageException;
+	public abstract void updateVirtualDocumentReferences(long documentRecordId, String virtualDocumentName) throws DataStorageException;
 	
 	public DataStorageType getType() {
 		return type;
