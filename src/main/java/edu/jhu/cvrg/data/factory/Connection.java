@@ -57,6 +57,7 @@ public abstract class Connection {
 	public abstract List<FileInfoDTO> getAllFilesByUser(long userId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getAllFilesReferenceByUser(long userId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getAllFilesByDocumentRecordId(long docId) throws DataStorageException;
+	public abstract List<FileInfoDTO> getAllFilesByTimeSeriesId(long timeseriesId) throws DataStorageException;
 	public abstract List<FileInfoDTO> getECGFilesByDocumentRecordId(long docId) throws DataStorageException;
 	public abstract List<AnalysisJobDTO> getAnalysisJobByUser(long userId) throws DataStorageException;
 	

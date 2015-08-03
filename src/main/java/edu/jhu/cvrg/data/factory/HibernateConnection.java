@@ -393,6 +393,34 @@ public class HibernateConnection extends Connection {
 		return ret;
 	}
 	
+	@Override
+	public List<FileInfoDTO> getAllFilesByTimeSeriesId(long timeseriesId) throws DataStorageException {
+		
+		List<FileInfoDTO> ret = new ArrayList<FileInfoDTO>();
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select f from FileInfo f where f.timeSeriesId = :timeseriesId");
+			
+			q.setParameter("timeseriesId", timeseriesId);
+			
+			@SuppressWarnings("unchecked")
+			List<FileInfo> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				FileInfo entity = l.get(i);
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
 	
 	@Override
 	public AnalysisJobDTO storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException{
