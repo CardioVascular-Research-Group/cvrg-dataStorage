@@ -52,6 +52,7 @@ CREATE TABLE documentrecord
   dateofrecording timestamp without time zone,
   adugain double precision,
   leadNames character varying(100),
+  timeseriesid bigint,
   CONSTRAINT documentrecord_pk PRIMARY KEY (documentrecordid)
 )
 WITH (
@@ -115,6 +116,7 @@ CREATE TABLE filesinfo
   fileid bigint NOT NULL,
   documentrecordid bigint NOT NULL,
   analysisjobid bigint,
+  timeseriesid bigint,
   CONSTRAINT filesinfo_pk PRIMARY KEY (fileid),
   CONSTRAINT analysisjob_filesinfo_fk FOREIGN KEY (analysisjobid)
       REFERENCES analysisjob (analysisjobid) MATCH SIMPLE

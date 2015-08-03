@@ -1,7 +1,7 @@
 package edu.jhu.cvrg.data.factory.hibernate;
 
 // Generated Dec 5, 2013 2:16:30 PM by Hibernate Tools 4.0.0
-
+// Modified 30 July, 2015 to add timeseriesid field -CRJ
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -24,6 +24,7 @@ public class FileInfo implements java.io.Serializable {
 	private DocumentRecord documentRecord;
 	private Long analysisJobId;
 	private AnalysisJob analysisJob;
+	private long timeseriesid;
 	
 
 	public FileInfo() {
@@ -38,10 +39,11 @@ public class FileInfo implements java.io.Serializable {
 		this.documentRecordId = documentrecordid;
 	}
 	
-	public FileInfo(long fileid, Long documentrecordid, Long analysisJobId) {
+	public FileInfo(long fileid, Long documentrecordid, Long analysisJobId, Long timeSeriesId) {
 		this.fileId = fileid;
 		this.documentRecordId = documentrecordid;
 		this.analysisJobId = analysisJobId;
+		this.timeseriesid = timeSeriesId;
 	}
 	
 	@Id
@@ -90,6 +92,14 @@ public class FileInfo implements java.io.Serializable {
 
 	public void setAnalysisJob(AnalysisJob analysisJob) {
 		this.analysisJob = analysisJob;
+	}
+
+	public long getTimeseriesid() {
+		return timeseriesid;
+	}
+
+	public void setTimeseriesid(long timeseriesid) {
+		this.timeseriesid = timeseriesid;
 	}
 
 }
