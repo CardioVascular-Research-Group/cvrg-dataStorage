@@ -23,8 +23,13 @@ public enum FileType {
 	
 	/**  Indicates an ECG file used by GE Magellan 	 **/
 	GE_MAGELLAN("GE Magellan", FileExtension.TXT),
+	
 	/**  Indicates an WFDB file format.  Requires both a header and a .dat file **/
 	WFDB("WFDB", FileExtension.HEA, FileExtension.DAT),
+	WFDB_16("WFDB", FileExtension.HEA, FileExtension.DAT),
+	WFDB_61("WFDB", FileExtension.HEA, FileExtension.DAT),
+	WFDB_212("WFDB", FileExtension.HEA, FileExtension.DAT),
+	
 	/**  Indicates an RDT file **/
 	RDT("RDT", FileExtension.RDT), 
 	/**  Indicates a Holter2 formatted file 	 **/
@@ -37,6 +42,9 @@ public enum FileType {
 	HL7("HL7", FileExtension.HL7),
 	/** Indicates an xyFile (which is has a .csv extension)	 **/
 	XY_FILE("XY formatted CSV file", FileExtension.CSV),
+	
+	RAW_XY_VAR_SAMPLE("XY formatted CSV file", FileExtension.CSV),
+	
 	PHILIPS_103("Philips 1.03", FileExtension.XML),
 	PHILIPS_104("Philips 1.04", FileExtension.XML),
 	MUSE_XML("Muse", FileExtension.XML),
