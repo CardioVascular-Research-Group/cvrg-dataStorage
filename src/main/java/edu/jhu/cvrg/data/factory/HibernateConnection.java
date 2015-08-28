@@ -127,10 +127,75 @@ public class HibernateConnection extends Connection {
 	 * @param originalFormat - based on the enumeration "fileFormat" in ECGformatCoverter.jar
 	 */
 	@Override
+	public Long initalDocumentStore(long userID, String recordName, String subjectID, int originalFormat,
+			 						String fileTreePath, Calendar dateUploaded, long[] filesId) throws DataStorageException {
+		
+		Long documentId = null;
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			DocumentRecord record = new DocumentRecord(null, recordName, userID, subjectID, originalFormat,
+					 									null, fileTreePath, null, null, 
+														dateUploaded != null ? dateUploaded.getTime() : null, 
+														null, null, null, null, null, null);
+			
+			session.save(record);
+			
+			_storeFilesInfo(record.getDocumentRecordId(), filesId, null, session);
+			
+			session.getTransaction().commit();
+			session.close();
+			
+			documentId = record.getDocumentRecordId();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return documentId;
+	}
+	
+	
+	public Long updateDocument(long documentId, double samplingRate, int leadCount, int numPoints, int age, 
+							   String gender, Calendar dateRecorded, double aduGain, String leadNames, String timeseriesId) throws DataStorageException {
+		
+		
+		try {
+			Session session = sessionFactory.openSession();
+		
+			session.beginTransaction();
+			
+			DocumentRecord doc = (DocumentRecord) session.get(DocumentRecord.class, documentId);
+			
+			
+			doc.setSamplingRate(samplingRate);
+			doc.setLeadCount(leadCount);
+			doc.setNumberOfPoints(numPoints);
+			doc.setAge(age);
+			doc.setGender(gender);
+			doc.setDateOfRecording(dateRecorded != null ? dateRecorded.getTime():null);
+			doc.setAduGain(aduGain);
+			doc.setLeadNames(leadNames);
+			doc.setTimeSeriesId(timeseriesId);
+			
+			session.save(doc);
+			
+			session.getTransaction().commit();
+			
+			session.close();
+			
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return documentId;
+	}
+	
 	public Long storeDocument(long userID, String recordName, String subjectID, int originalFormat,
 			double samplingRate, String fileTreePath, int leadCount,
 			int numPoints, Calendar dateUploaded, int age, String gender,
-			Calendar dateRecorded, double aduGain, long[] filesId, String leadNames, long timeseriesId) throws DataStorageException {
+			Calendar dateRecorded, double aduGain, long[] filesId, String leadNames, String timeseriesId) throws DataStorageException {
 		
 		Long documentId = null;
 		
@@ -147,7 +212,7 @@ public class HibernateConnection extends Connection {
 			
 			session.save(record);
 			
-			_storeFilesInfo(record.getDocumentRecordId(), filesId, null, timeseriesId, session);
+			_storeFilesInfo(record.getDocumentRecordId(), filesId, null, session);
 			
 			session.getTransaction().commit();
 			session.close();
@@ -159,7 +224,8 @@ public class HibernateConnection extends Connection {
 		
 		return documentId;
 	}
-
+	
+	
 	@Override
 	public Long storeAnnotations(Set<AnnotationDTO> annotSet) throws DataStorageException {
 		
@@ -240,11 +306,11 @@ public class HibernateConnection extends Connection {
 		return ann;
 	}
 
-	private void _storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId, Long timeseriesId, Session session) {
+	private void _storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId, Session session) {
 		
 		if(fileEntryId != null){
 			for (Long id : fileEntryId) {
-				FileInfo file = new FileInfo(id, documentRecordId, analysisJobId, timeseriesId);
+				FileInfo file = new FileInfo(id, documentRecordId, analysisJobId);
 				session.save(file);
 			}
 		}
@@ -261,14 +327,14 @@ public class HibernateConnection extends Connection {
 	}
 
 	@Override
-	public boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId, Long timeseriesId) throws DataStorageException {
+	public boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId) throws DataStorageException {
 		
 		boolean ret = false;
 		try{
 			Session session = sessionFactory.openSession();
 			session.beginTransaction();
 			
-			_storeFilesInfo(documentRecordId, fileEntryId, analysisJobId, timeseriesId, session);
+			_storeFilesInfo(documentRecordId, fileEntryId, analysisJobId, session);
 			
 			session.getTransaction().commit();
 			session.close();
@@ -288,7 +354,7 @@ public class HibernateConnection extends Connection {
 		try {
 			Session session = sessionFactory.openSession();
 			
-			Query q = session.createQuery("select d.filesInfo from DocumentRecord d where d.userId = :userid");
+			Query q = session.createQuery("select d.filesInfo from DocumentRecord d where d.userId = :userid and d.timeseriesId is not null");
 			
 			q.setParameter("userid", userId);
 			
@@ -297,7 +363,7 @@ public class HibernateConnection extends Connection {
 			
 			for (int i = 0; i < l.size(); i++) {
 				FileInfo entity = l.get(i);
-				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
 			}
 			
 			session.close();
@@ -325,7 +391,7 @@ public class HibernateConnection extends Connection {
 			
 			for (int i = 0; i < l.size(); i++) {
 				FileInfo entity = l.get(i);
-				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
 			}
 			
 			session.close();
@@ -354,7 +420,7 @@ public class HibernateConnection extends Connection {
 			
 			for (int i = 0; i < l.size(); i++) {
 				FileInfo entity = l.get(i);
-				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
 			}
 			
 			session.close();
@@ -382,7 +448,7 @@ public class HibernateConnection extends Connection {
 			
 			for (int i = 0; i < l.size(); i++) {
 				FileInfo entity = l.get(i);
-				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
 			}
 			
 			session.close();
@@ -410,7 +476,7 @@ public class HibernateConnection extends Connection {
 			
 			for (int i = 0; i < l.size(); i++) {
 				FileInfo entity = l.get(i);
-				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId(), entity.getTimeseriesid()));
+				ret.add(new FileInfoDTO(entity.getDocumentRecordId(), entity.getFileId(), entity.getAnalysisJobId()));
 			}
 			
 			session.close();

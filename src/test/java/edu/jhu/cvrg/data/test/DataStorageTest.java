@@ -39,7 +39,7 @@ public class DataStorageTest{
 	private long userId = 999999999L;
 	private static AnalysisJobDTO analysisJob;
 	private static Long annotationId;
-	private static Long timeseriesId;
+	private static String timeseriesId = null;
 	
 	@Before
 	public void setup() {
@@ -179,7 +179,7 @@ System.out.println("document: " + document);
 	public void test0404StoreAnalysisFile() {
 		boolean ret = false;
 		try {
-			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(), new long[]{fileId+1,fileId+2}, analysisJob.getAnalysisJobId(), timeseriesId);
+			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(), new long[]{fileId+1,fileId+2}, analysisJob.getAnalysisJobId());
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
