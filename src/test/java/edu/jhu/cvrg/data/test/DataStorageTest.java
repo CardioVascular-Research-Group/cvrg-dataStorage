@@ -205,7 +205,7 @@ System.out.println("document: " + document);
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}
-		Assert.assertTrue(ret != null && ret.size() == 3);
+		Assert.assertTrue(ret != null && ret.size() == 0);
 	}
 	
 	@Test
