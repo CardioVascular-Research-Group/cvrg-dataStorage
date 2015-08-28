@@ -46,8 +46,8 @@ public class DocumentRecord implements java.io.Serializable {
 	@Column(name = "subjectid", length = 75)
 	private String subjectId;
 	
-	@Column(name = "timeseriesid", length = 75)
-	private Long timeseriesId;
+	@Column(name = "timeseriesid", length = 50)
+	private String timeseriesId;
 	
 	/** based on the enumeration "fileFormat" in ECGformatCoverter.jar
 	 *  
@@ -111,7 +111,7 @@ public class DocumentRecord implements java.io.Serializable {
 			Long userid, String subjectid, Integer originalformat,
 			Double samplingrate, String filetreepath, Integer leadcount,
 			Integer numberofpoints, Date dateofupload, Integer age,
-			String gender, Date dateofrecording, Double adugain, String leadNames, Long timeseriesId) {
+			String gender, Date dateofrecording, Double adugain, String leadNames, String timeseriesId) {
 		this.documentRecordId = documentrecordid;
 		this.recordName = recordname;
 		this.userId = userid;
@@ -138,11 +138,11 @@ public class DocumentRecord implements java.io.Serializable {
 		this.documentRecordId = documentrecordid;
 	}
 	
-	public Long getTimeSeriesId() {
+	public String getTimeSeriesId() {
 		return this.timeseriesId;
 	}
 
-	public void setTimeSeriesId(Long timeseriesid) {
+	public void setTimeSeriesId(String timeseriesid) {
 		this.timeseriesId = timeseriesid;
 	}
 

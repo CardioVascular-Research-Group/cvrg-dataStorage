@@ -24,7 +24,6 @@ public class FileInfo implements java.io.Serializable {
 	private DocumentRecord documentRecord;
 	private Long analysisJobId;
 	private AnalysisJob analysisJob;
-	private long timeseriesid;
 	
 
 	public FileInfo() {
@@ -39,11 +38,10 @@ public class FileInfo implements java.io.Serializable {
 		this.documentRecordId = documentrecordid;
 	}
 	
-	public FileInfo(long fileid, Long documentrecordid, Long analysisJobId, Long timeSeriesId) {
+	public FileInfo(long fileid, Long documentrecordid, Long analysisJobId) {
 		this.fileId = fileid;
 		this.documentRecordId = documentrecordid;
 		this.analysisJobId = analysisJobId;
-		this.timeseriesid = timeSeriesId;
 	}
 	
 	@Id
@@ -93,13 +91,4 @@ public class FileInfo implements java.io.Serializable {
 	public void setAnalysisJob(AnalysisJob analysisJob) {
 		this.analysisJob = analysisJob;
 	}
-
-	public long getTimeseriesid() {
-		return timeseriesid;
-	}
-
-	public void setTimeseriesid(long timeseriesid) {
-		this.timeseriesid = timeseriesid;
-	}
-
 }

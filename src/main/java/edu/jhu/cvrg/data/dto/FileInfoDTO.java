@@ -9,7 +9,6 @@ public class FileInfoDTO implements Serializable{
 	private Long documentRecordId;
 	private Long fileEntryId;
 	private Long analysisJobId;
-	private Long timeseriesid;
 	
 	public FileInfoDTO(Long documentRecordId, Long fileEntryId) {
 		super();
@@ -17,12 +16,11 @@ public class FileInfoDTO implements Serializable{
 		this.fileEntryId = fileEntryId;
 	}
 	
-	public FileInfoDTO(Long documentRecordId, Long fileEntryId, Long analysisJobId, Long timeseriesid) {
+	public FileInfoDTO(Long documentRecordId, Long fileEntryId, Long analysisJobId) {
 		super();
 		this.documentRecordId = documentRecordId;
 		this.fileEntryId = fileEntryId;
 		this.analysisJobId = analysisJobId;
-		this.setTimeseriesid(timeseriesid);
 	}
 	
 	public Long getDocumentRecordId() {
@@ -42,14 +40,6 @@ public class FileInfoDTO implements Serializable{
 	}
 	public void setAnalysisJobId(Long analysisJobId) {
 		this.analysisJobId = analysisJobId;
-	}
-
-	public Long getTimeseriesid() {
-		return timeseriesid;
-	}
-
-	public void setTimeseriesid(Long timeseriesid) {
-		this.timeseriesid = timeseriesid;
 	}
 	
 }
