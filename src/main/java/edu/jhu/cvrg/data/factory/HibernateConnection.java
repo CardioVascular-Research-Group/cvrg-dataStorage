@@ -298,7 +298,7 @@ public class HibernateConnection extends Connection {
 		
 		AnnotationInfo ann = new AnnotationInfo(null, annotation.getRecordID(), startCoordId, endCoordId, annotation.getCreatedBy(), annotation.getAnnotationType(), annotation.getName(), annotation.getBioportalReferenceLink(), 
 													  annotation.getBioportalOntology(), annotation.getBioportalClassId(), annotation.getLead(), annotation.getUnitMeasurement(), annotation.getDescription(), 
-													  annotation.getValue(), annotation.getAnalysisJobId());
+													  annotation.getValue(), annotation.getAnalysisJobId(), annotation.getUserID());
 		session.save(ann);
 		
 		annotation.setAnnotationId(ann.getAnnotationId());
@@ -578,14 +578,14 @@ public class HibernateConnection extends Connection {
 	 * @author Michael Shipway
 	 */
 	@Override
-	public int[][] getAnnotationCountPerLead(Long docId, int qtdLead) throws DataStorageException{
+	public int[][] getAnnotationCountPerLead(Long docId, Long userId, int qtdLead) throws DataStorageException{
 		int[][] annPerLead ;
 		
 		try {
 			Session session = sessionFactory.openSession();
 			
-			int[][] annPerLeadManual = _getAnnotationCount(true, docId, session);
-			int[][] annPerLeadAuto = _getAnnotationCount(false, docId, session);
+			int[][] annPerLeadManual = _getAnnotationCount(docId, userId, session);
+			int[][] annPerLeadAuto = _getAnnotationCount(docId, null, session);
 			
 			annPerLead = new int[qtdLead][4];
 			
@@ -624,15 +624,15 @@ public class HibernateConnection extends Connection {
 	}
 	
 	
-	private int[][] _getAnnotationCount(boolean manual, Long docId, Session session){
+	private int[][] _getAnnotationCount(Long docId, Long userId, Session session){
 		int[][] annPerLead  = null;
 		
 		StringBuilder hql = new StringBuilder();
 		
 		hql.append("select leadIndex, count(annotationId) from AnnotationInfo where documentRecordId = :docId and leadindex is not null and ");
 		
-		if(manual){
-			hql.append(" createdBy = 'manual' ");
+		if(userId != null){
+			hql.append(" createdBy = 'manual' and userId = :userId ");
 		}else{
 			hql.append(" (createdBy <> 'manual' or createdBy is null) ");
 		}
@@ -640,6 +640,10 @@ public class HibernateConnection extends Connection {
 		hql.append(" group by leadIndex order by 1");
 		
 		Query q = session.createQuery(hql.toString()).setParameter("docId", docId);
+		
+		if(userId != null){
+			q.setParameter("userId", userId);
+		}
 		
 		@SuppressWarnings("unchecked")
 		List<Object[]> result = q.list();
@@ -668,7 +672,7 @@ public class HibernateConnection extends Connection {
 			hql.append("select a from DocumentRecord d ")
 				.append("inner join d.annotationInfos as a ")
 				.append("left  join a.startCoordinate as cStart ")
-				.append("where d.documentRecordId = :docId and d.userId = :userId and a.leadIndex ");
+				.append("where d.documentRecordId = :docId and (a.userId = :userId or a.userId is null) and a.leadIndex ");
 			
 			if(leadIndex != null){
 				hql.append(" = :leadIndex ");	
@@ -912,7 +916,7 @@ public class HibernateConnection extends Connection {
 		try {
 			Session session = sessionFactory.openSession();
 			
-			Query q = session.createQuery("select a from DocumentRecord d inner join d.annotationInfos a where a.annotationId = :annotationId and d.userId = :userId ");
+			Query q = session.createQuery("select a from AnnotationInfo a where a.annotationId = :annotationId and a.userId = :userId ");
 			
 			q.setParameter("annotationId", annotationId);
 			q.setParameter("userId", userId);

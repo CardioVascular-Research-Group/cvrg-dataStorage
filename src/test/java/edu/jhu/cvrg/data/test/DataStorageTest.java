@@ -234,7 +234,7 @@ System.out.println("document: " + document);
 	public void test0409getAnalysisJobById() {
 		int[][] ret = null;
 		try {
-			ret = dataStorage.getAnnotationCountPerLead(document.getDocumentRecordId(), 12);
+			ret = dataStorage.getAnnotationCountPerLead(document.getDocumentRecordId(), userId, 12);
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}

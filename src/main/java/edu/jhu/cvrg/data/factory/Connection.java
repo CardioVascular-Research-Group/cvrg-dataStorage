@@ -65,7 +65,7 @@ public abstract class Connection {
 	
 	public abstract AnalysisJobDTO getAnalysisJobById(long jobId) throws DataStorageException;
 	public abstract DocumentRecordDTO getDocumentRecordById(long documentRecordId) throws DataStorageException;
-	public abstract int[][] getAnnotationCountPerLead(Long docId, int qtdLead) throws DataStorageException;
+	public abstract int[][] getAnnotationCountPerLead(Long docId, Long userId, int qtdLead) throws DataStorageException;
 	public abstract List<AnnotationDTO> getLeadAnnotationNode(Long userId, Long docId, Integer leadIndex) throws DataStorageException;
 	public abstract AnnotationDTO getAnnotationById(Long userId, Long annotationId) throws DataStorageException;
 	

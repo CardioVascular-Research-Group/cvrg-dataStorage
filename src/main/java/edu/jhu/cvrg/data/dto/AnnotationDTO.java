@@ -13,7 +13,7 @@ public class AnnotationDTO implements Serializable, Cloneable{
 	private static final long serialVersionUID = 198688003623925166L;
 	
 	private Long annotationId;;
-	private long userID;
+	private Long userID;
 	private Long recordID;
 	private String createdBy;
 	private String annotationType;
@@ -37,7 +37,7 @@ public class AnnotationDTO implements Serializable, Cloneable{
 	}
 	
 	
-	public AnnotationDTO(long userID, Long recordID, String createdBy,
+	public AnnotationDTO(Long userID, Long recordID, String createdBy,
 			String annotationType, String name, String bioportalOntologyID, String bioportalClassId, String bioportalReferenceLink,
 			Integer lead, String unitMeasurement, String description,
 			String value, Calendar timestamp, Double startXcoord,
@@ -68,10 +68,10 @@ public class AnnotationDTO implements Serializable, Cloneable{
 		this.endYcoord = endYcoord;
 	}
 	
-	public long getUserID() {
+	public Long getUserID() {
 		return userID;
 	}
-	public void setUserID(long userID) {
+	public void setUserID(Long userID) {
 		this.userID = userID;
 	}
 	public Long getRecordID() {

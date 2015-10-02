@@ -46,6 +46,7 @@ public class AnnotationInfo implements java.io.Serializable {
 	private String value;
 	private Long documentRecordId;
 	private Long analysisJobId;
+	private Long userId;
 
 	public AnnotationInfo() {
 	}
@@ -55,7 +56,7 @@ public class AnnotationInfo implements java.io.Serializable {
 	}
 
 	public AnnotationInfo(Long annotationid, Long documentrecordid, Long startingcoordinateid, Long endingcoordinateid, String createdby, String annotationtype, String name, String bioportalreferenceLink,
-						  String bioportalOntology, String bioportalid, Integer leadindex, String unitofmeasurement, String description, String value, Long analysisJobId) {
+						  String bioportalOntology, String bioportalid, Integer leadindex, String unitofmeasurement, String description, String value, Long analysisJobId, Long userId) {
 		this.annotationId = annotationid;
 		this.documentRecordId = documentrecordid;
 		this.startCoordinateId = startingcoordinateid;
@@ -71,6 +72,7 @@ public class AnnotationInfo implements java.io.Serializable {
 		this.description = description;
 		this.value = value;
 		this.analysisJobId = analysisJobId;
+		this.userId = userId;
 	}
 	
 	public AnnotationInfo(Long annotationid,
@@ -79,7 +81,7 @@ public class AnnotationInfo implements java.io.Serializable {
 			Coordinate coordinateByEndingcoordinateid, String createdby,
 			String annotationtype, String name, String bioportalReferenceLink,
 			String bioportalOntology, String bioportalClassId, Integer leadindex, String unitofmeasurement,
-			String description, String value, Long analysisJobId) {
+			String description, String value, Long analysisJobId, Long userId) {
 		this.annotationId = annotationid;
 		this.startCoordinate = coordinateByStartingcoordinateid;
 		this.documentRecord = documentrecord;
@@ -95,6 +97,7 @@ public class AnnotationInfo implements java.io.Serializable {
 		this.description = description;
 		this.value = value;
 		this.analysisJobId = analysisJobId;
+		this.userId = userId;
 	}
 
 	@Id
@@ -283,6 +286,15 @@ public class AnnotationInfo implements java.io.Serializable {
 
 	public void setAnalysisJobId(Long analysisJobId) {
 		this.analysisJobId = analysisJobId;
+	}
+
+	@Column(name = "userId")
+	public Long getUserId() {
+		return userId;
+	}
+
+	public void setUserId(Long userId) {
+		this.userId = userId;
 	}
 
 }
