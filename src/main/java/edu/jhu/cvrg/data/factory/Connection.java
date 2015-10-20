@@ -44,6 +44,7 @@ public abstract class Connection {
 	
 	public abstract Long initalDocumentStore(long userID, String recordName, String subjectID, int originalFormat,String fileTreePath, Calendar dateUploaded, long[] filesId) throws DataStorageException;
 	public abstract Long updateDocument(long documentId, double samplingRate, int leadCount, int numPoints, int age, String gender, Calendar dateRecorded, double aduGain, String leadNames, String timeseriesId) throws DataStorageException;
+	public abstract void markDocumentToDelete(long documentId) throws DataStorageException;
 	public abstract Long storeDocument(long userID, String recordName, String subjectID, int originalFormat, double samplingRate, String fileTreePath, int leadCount, int numPoints, Calendar dateUploaded, int age, String gender, Calendar dateRecorded, double aduGain, long[] filesId, String leadNames, String timeseriesId) throws DataStorageException;
 	public abstract Long storeAnnotations(Set<AnnotationDTO> annotSet) throws DataStorageException;
 	public abstract Long storeAnnotation(AnnotationDTO annotation) throws DataStorageException;
@@ -65,6 +66,7 @@ public abstract class Connection {
 	
 	public abstract AnalysisJobDTO getAnalysisJobById(long jobId) throws DataStorageException;
 	public abstract DocumentRecordDTO getDocumentRecordById(long documentRecordId) throws DataStorageException;
+	public abstract List<DocumentRecordDTO> getDocumentsToDelete() throws DataStorageException;
 	public abstract int[][] getAnnotationCountPerLead(Long docId, Long userId, int qtdLead) throws DataStorageException;
 	public abstract List<AnnotationDTO> getLeadAnnotationNode(Long userId, Long docId, Integer leadIndex) throws DataStorageException;
 	public abstract AnnotationDTO getAnnotationById(Long userId, Long annotationId) throws DataStorageException;

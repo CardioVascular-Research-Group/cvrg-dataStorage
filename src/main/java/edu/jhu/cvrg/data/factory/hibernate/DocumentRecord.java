@@ -88,6 +88,9 @@ public class DocumentRecord implements java.io.Serializable {
 	@Column(name = "leadNames", length = 100)
 	private String leadNames;
 	
+	@Column(name = "deleteFlag")
+	private Boolean deleteFlag;
+	
 	@OneToOne(fetch = FetchType.LAZY, mappedBy = "documentRecord", cascade={CascadeType.REMOVE})
 	private UploadStatus uploadStatus;
 	
@@ -288,6 +291,14 @@ public class DocumentRecord implements java.io.Serializable {
 
 	public void setLeadNames(String leadNames) {
 		this.leadNames = leadNames;
+	}
+
+	public Boolean getDeleteFlag() {
+		return deleteFlag;
+	}
+
+	public void setDeleteFlag(Boolean deleteFlag) {
+		this.deleteFlag = deleteFlag;
 	}
 
 }

@@ -192,6 +192,28 @@ public class HibernateConnection extends Connection {
 		return documentId;
 	}
 	
+	public void markDocumentToDelete(long documentId) throws DataStorageException {
+		try {
+			Session session = sessionFactory.openSession();
+			
+			session.beginTransaction();
+			
+			DocumentRecord doc = (DocumentRecord) session.get(DocumentRecord.class, documentId);
+			
+			doc.setDeleteFlag(true);
+			
+			session.save(doc);
+			
+			session.getTransaction().commit();
+			
+			session.close();
+		
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+	}
+	
+	
 	public Long storeDocument(long userID, String recordName, String subjectID, int originalFormat,
 			double samplingRate, String fileTreePath, int leadCount,
 			int numPoints, Calendar dateUploaded, int age, String gender,
@@ -354,7 +376,7 @@ public class HibernateConnection extends Connection {
 		try {
 			Session session = sessionFactory.openSession();
 			
-			Query q = session.createQuery("select d.filesInfo from DocumentRecord d where d.userId = :userid and d.timeseriesId is not null");
+			Query q = session.createQuery("select d.filesInfo from DocumentRecord d where d.userId = :userid and d.timeseriesId is not null and d.deleteFlag is null");
 			
 			q.setParameter("userid", userId);
 			
@@ -382,7 +404,7 @@ public class HibernateConnection extends Connection {
 		try {
 			Session session = sessionFactory.openSession();
 			
-			Query q = session.createQuery("select d.documentRecord.filesInfo from VirtualDocument d where d.userId = :userid");
+			Query q = session.createQuery("select d.documentRecord.filesInfo from VirtualDocument d where d.userId = :userid and d.documentRecord.deleteFlag is null");
 			
 			q.setParameter("userid", userId);
 			
@@ -567,6 +589,33 @@ public class HibernateConnection extends Connection {
 		
 		return ret;
 	}
+	
+	@Override
+	public List<DocumentRecordDTO> getDocumentsToDelete() throws DataStorageException {
+		
+		List<DocumentRecordDTO> ret = new ArrayList<DocumentRecordDTO>();
+		
+		try {
+			Session session = sessionFactory.openSession();
+			
+			Query q = session.createQuery("select d from DocumentRecord d where d.timeseriesId is not null and d.deleteFlag is not null");
+			
+			@SuppressWarnings("unchecked")
+			List<DocumentRecord> l = q.list();
+			
+			for (int i = 0; i < l.size(); i++) {
+				DocumentRecord entity = l.get(i);
+				ret.add(new DocumentRecordDTO(entity.getDocumentRecordId(), entity.getRecordName(), entity.getUserId(), entity.getSubjectId(), FileType.getTypeById(entity.getOriginalFormat()), entity.getSamplingRate(), entity.getFileTreePath(),entity.getLeadCount(), entity.getNumberOfPoints(), entity.getDateOfUpload(), entity.getAge(), entity.getGender(), entity.getDateOfRecording(), entity.getAduGain(), entity.getLeadNames(), entity.getTimeSeriesId()));
+			}
+			
+			session.close();
+		} catch (HibernateException e) {
+			throw new DataStorageException(e);
+		}
+		
+		return ret;
+	}
+	
 	
 	/**
 	 * Gets an array of the counts of annotations from the metadata storage
