@@ -4,7 +4,9 @@ package edu.jhu.cvrg.data.factory.hibernate;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -43,6 +45,7 @@ public class AnalysisJob implements java.io.Serializable {
 	private Long analysisTime;
 	private String message; 
 	private List<FileInfo> filesInfo = new ArrayList<FileInfo>(0);
+	private Set<AnnotationInfo> annotationInfos = new HashSet<AnnotationInfo>(0);
 
 	public AnalysisJob() {
 	}
@@ -174,7 +177,7 @@ public class AnalysisJob implements java.io.Serializable {
 
 	public void setMessage(String message) {
 		if (message != null){
-			if (message.length()<300) {
+			if (message.length()>300) {
 				message = message.substring(0, 295) + "...";
 			}
 		}
@@ -189,4 +192,14 @@ public class AnalysisJob implements java.io.Serializable {
 	public void setAnalysisTime(Long analysisTime) {
 		this.analysisTime = analysisTime;
 	}
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "analysisJob", cascade={CascadeType.REMOVE})
+	public Set<AnnotationInfo> getAnnotationInfos() {
+		return annotationInfos;
+	}
+
+	public void setAnnotationInfos(Set<AnnotationInfo> annotationInfos) {
+		this.annotationInfos = annotationInfos;
+	}
+	
 }

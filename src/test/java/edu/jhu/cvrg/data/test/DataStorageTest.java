@@ -1,5 +1,6 @@
 package edu.jhu.cvrg.data.test;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -106,7 +107,8 @@ System.out.println("document: " + document);
 	public void test0400StoreDocument() {
 		Long documentRecordId = null;
 		try {
-			long[] filesId = new long[]{fileId};
+			List<Long> filesId = new ArrayList<Long>();
+			filesId.add(fileId);
 			
 			documentRecordId = dataStorage.storeDocument(document.getUserId(), document.getRecordName(), document.getSubjectId(), document.getOriginalFormat().ordinal(), document.getSamplingRate(), document.getFileTreePath(), document.getLeadCount(), document.getNumberOfPoints(), null, document.getAge(), document.getGender(), null, document.getAduGain(), filesId, document.getLeadNames(), document.getTimeSeriesId());
 			
@@ -179,7 +181,12 @@ System.out.println("document: " + document);
 	public void test0404StoreAnalysisFile() {
 		boolean ret = false;
 		try {
-			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(), new long[]{fileId+1,fileId+2}, analysisJob.getAnalysisJobId());
+			List<Long> filesId = new ArrayList<Long>();
+			
+			filesId.add(fileId+1);
+			filesId.add(fileId+2);
+			
+			ret = dataStorage.storeFilesInfo(document.getDocumentRecordId(),filesId, analysisJob.getAnalysisJobId());
 		} catch (DataStorageException e) {
 			e.printStackTrace();
 		}

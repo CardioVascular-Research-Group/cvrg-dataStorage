@@ -42,13 +42,13 @@ public abstract class Connection {
 	protected abstract void init() throws DataStorageException;
 	public abstract void close();
 	
-	public abstract Long initalDocumentStore(long userID, String recordName, String subjectID, int originalFormat,String fileTreePath, Calendar dateUploaded, long[] filesId) throws DataStorageException;
+	public abstract Long initalDocumentStore(long userID, String recordName, String subjectID, int originalFormat,String fileTreePath, Calendar dateUploaded, Collection<Long> filesId) throws DataStorageException;
 	public abstract Long updateDocument(long documentId, double samplingRate, int leadCount, int numPoints, int age, String gender, Calendar dateRecorded, double aduGain, String leadNames, String timeseriesId) throws DataStorageException;
 	public abstract void markDocumentToDelete(long documentId) throws DataStorageException;
-	public abstract Long storeDocument(long userID, String recordName, String subjectID, int originalFormat, double samplingRate, String fileTreePath, int leadCount, int numPoints, Calendar dateUploaded, int age, String gender, Calendar dateRecorded, double aduGain, long[] filesId, String leadNames, String timeseriesId) throws DataStorageException;
+	public abstract Long storeDocument(long userID, String recordName, String subjectID, int originalFormat, double samplingRate, String fileTreePath, int leadCount, int numPoints, Calendar dateUploaded, int age, String gender, Calendar dateRecorded, double aduGain, Collection<Long> filesId, String leadNames, String timeseriesId) throws DataStorageException;
 	public abstract Long storeAnnotations(Set<AnnotationDTO> annotSet) throws DataStorageException;
 	public abstract Long storeAnnotation(AnnotationDTO annotation) throws DataStorageException;
-	public abstract boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId) throws DataStorageException;
+	public abstract boolean storeFilesInfo(long documentRecordId, Collection<Long> fileEntryId, Long analysisJobId) throws DataStorageException;
 	public abstract AnalysisJobDTO storeAnalysisJob(long documentRecord, int fileCount, int parameterCount, String serviceUrl, String serviceName, String serviceMethod, Date dateOfAnalysis, long userId) throws DataStorageException;
 	public abstract boolean updateUploadStatus(long documentRecordId, UploadState uploadPhase, Long time, Boolean status, String message) throws DataStorageException;
 	public abstract boolean updateAnalysisStatus(long analysisJobId, Long analysisTime, String message) throws DataStorageException;

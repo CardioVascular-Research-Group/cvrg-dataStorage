@@ -128,7 +128,7 @@ public class HibernateConnection extends Connection {
 	 */
 	@Override
 	public Long initalDocumentStore(long userID, String recordName, String subjectID, int originalFormat,
-			 						String fileTreePath, Calendar dateUploaded, long[] filesId) throws DataStorageException {
+			 						String fileTreePath, Calendar dateUploaded, Collection<Long> filesId) throws DataStorageException {
 		
 		Long documentId = null;
 		
@@ -217,7 +217,7 @@ public class HibernateConnection extends Connection {
 	public Long storeDocument(long userID, String recordName, String subjectID, int originalFormat,
 			double samplingRate, String fileTreePath, int leadCount,
 			int numPoints, Calendar dateUploaded, int age, String gender,
-			Calendar dateRecorded, double aduGain, long[] filesId, String leadNames, String timeseriesId) throws DataStorageException {
+			Calendar dateRecorded, double aduGain, Collection<Long> filesId, String leadNames, String timeseriesId) throws DataStorageException {
 		
 		Long documentId = null;
 		
@@ -313,7 +313,7 @@ public class HibernateConnection extends Connection {
 			startCoordId = addCoordinate(session, annotation.getStartXcoord(), annotation.getStartYcoord());
 			endCoordId = startCoordId;
 			
-			if(annotation.getEndXcoord() != null && annotation.getEndYcoord() != null && (annotation.getStartXcoord() != annotation.getEndXcoord() || annotation.getStartYcoord() != annotation.getEndYcoord())){
+			if(annotation.getEndXcoord() != null && annotation.getEndYcoord() != null && (!annotation.getStartXcoord().equals(annotation.getEndXcoord()) || !annotation.getStartYcoord().equals(annotation.getEndYcoord()))){
 				endCoordId = addCoordinate(session, annotation.getEndXcoord(), annotation.getEndYcoord());
 			}
 		}
@@ -328,7 +328,7 @@ public class HibernateConnection extends Connection {
 		return ann;
 	}
 
-	private void _storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId, Session session) {
+	private void _storeFilesInfo(long documentRecordId, Collection<Long> fileEntryId, Long analysisJobId, Session session) {
 		
 		if(fileEntryId != null){
 			for (Long id : fileEntryId) {
@@ -349,7 +349,7 @@ public class HibernateConnection extends Connection {
 	}
 
 	@Override
-	public boolean storeFilesInfo(long documentRecordId, long[] fileEntryId, Long analysisJobId) throws DataStorageException {
+	public boolean storeFilesInfo(long documentRecordId, Collection<Long> fileEntryId, Long analysisJobId) throws DataStorageException {
 		
 		boolean ret = false;
 		try{
@@ -1225,7 +1225,8 @@ public class HibernateConnection extends Connection {
 					+"  r.referenceurl, "
 					+"  r.licence, "			
 					+"  r.versionAlgorithm, "
-					+"  r.versionWebService "
+					+"  r.versionWebService, "
+					+"	a.resultformat "
 					+"FROM  "
 					+"  Algorithm a,"
 					+"  Service w, "
@@ -1258,9 +1259,8 @@ public class HibernateConnection extends Connection {
 				alg.setLicence((String)obj[11]);
 				alg.setVersionIdAlgorithm((String)obj[12]);
 				alg.setVersionIdWebService((String)obj[13]);
-				alg.setWfdbAnnotationOutput(true);
+				alg.setResultType((String)obj[14]);
 				alg.setParameters(getAlgorithmParameterArray(alg.getId()));
-				
 				ret.add(alg);
 			}
 			

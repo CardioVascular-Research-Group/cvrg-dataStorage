@@ -47,6 +47,7 @@ public class AnnotationInfo implements java.io.Serializable {
 	private Long documentRecordId;
 	private Long analysisJobId;
 	private Long userId;
+	private AnalysisJob analysisJob;
 
 	public AnnotationInfo() {
 	}
@@ -295,6 +296,16 @@ public class AnnotationInfo implements java.io.Serializable {
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "analysisJobId", insertable = false, updatable = false)
+	public AnalysisJob getAnalysisJob() {
+		return analysisJob;
+	}
+
+	public void setAnalysisJob(AnalysisJob analysisJob) {
+		this.analysisJob = analysisJob;
 	}
 
 }
