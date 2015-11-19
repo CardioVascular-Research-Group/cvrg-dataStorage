@@ -263,10 +263,14 @@ public class AlgorithmDTO implements Serializable{
 	public AnalysisResultType getResultType() {
 		return resultType;
 	}
+	
+	public void setResultType(AnalysisResultType type) {
+		resultType = type;
+	}
 
 	public void setResultType(String resultType) {
 		if(resultType != null){
-			this.resultType = AnalysisResultType.valueOf(resultType);
+			this.setResultType(AnalysisResultType.valueOf(resultType));
 		}
 	}
 
