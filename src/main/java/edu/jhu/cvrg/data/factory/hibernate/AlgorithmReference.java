@@ -22,6 +22,10 @@ public class AlgorithmReference implements Serializable {
 	@Column(name="\"algorithmreferenceid\"")
 	private Integer algorithmreferenceid;
 
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name="\"algorithmid\"", nullable = false, insertable = false, updatable = false)
+	private Algorithm algorithm;
+	
 	@Column(name="\"algorithmid\"")
 	private Integer algorithmid;
 
@@ -112,6 +116,14 @@ public class AlgorithmReference implements Serializable {
 
 	public void setReferenceurl(String referenceURL) {
 		this.referenceurl = referenceURL;
+	}
+
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
 	}
 
 

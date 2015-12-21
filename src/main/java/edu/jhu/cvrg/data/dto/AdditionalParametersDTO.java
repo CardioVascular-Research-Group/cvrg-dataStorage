@@ -39,6 +39,10 @@ public class AdditionalParametersDTO implements Serializable{
 	
 	private boolean multipleSelect=false;
 	
+	public AdditionalParametersDTO() {
+		validator = new ParameterValidatorDTO();
+	}
+	
 	public int getId() {
 		return id;
 	}

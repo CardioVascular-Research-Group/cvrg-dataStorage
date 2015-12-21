@@ -2,12 +2,11 @@ package edu.jhu.cvrg.data.factory.hibernate;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 
@@ -21,43 +20,47 @@ public class AlgorithmPerson implements Serializable {
 	
 	private static final long serialVersionUID = -5180717846077955042L;
 
-	@Id
-	@SequenceGenerator(name="algorithm_person_generator", sequenceName="algorithm_person_generator_seq")
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="algorithm_person_generator")
-	@Column(name="\"algorithmpersonid\"")
-	private Integer algorithmpersonid;
+	@EmbeddedId
+	private AlgorithmPersonId id;
 
-	@Column(name="\"personid\"")
-	private Integer personid;
-
-	@Column(name="\"algorithmid\"")
-	private Integer algorithmid;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "\"algorithmid\"", nullable = false, insertable = false, updatable = false)
+	private Algorithm algorithm;
 	
 	public AlgorithmPerson() {
 	}
 
-	public Integer getAlgorithmPersonid() {
-		return algorithmpersonid;
+	public Algorithm getAlgorithm() {
+		return algorithm;
 	}
 
-	public void setAlgorithmPersonid(Integer algorithmPersonid) {
-		this.algorithmpersonid = algorithmPersonid;
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
 	}
 
-	public Integer getPersonid() {
-		return this.personid;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		return result;
 	}
 
-	public void setPersonid(Integer personid) {
-		this.personid = personid;
-	}
-
-	public Integer getAlgorithmid() {
-		return algorithmid;
-	}
-
-	public void setAlgorithmid(Integer algorithmid) {
-		this.algorithmid = algorithmid;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		AlgorithmPerson other = (AlgorithmPerson) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		return true;
 	}
 
 }

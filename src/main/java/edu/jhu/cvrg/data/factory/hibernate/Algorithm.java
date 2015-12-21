@@ -2,12 +2,18 @@ package edu.jhu.cvrg.data.factory.hibernate;
 
 
 import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -45,6 +51,16 @@ public class Algorithm implements Serializable  {
 
 	@Column(name="\"resultformat\"")
 	private String resultformat;
+	
+	@OneToOne(fetch = FetchType.EAGER, mappedBy = "algorithm", cascade={CascadeType.REMOVE})
+	private AlgorithmReference algorithmReference;
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "algorithm", cascade={CascadeType.REMOVE})
+	private Set<Parameter> parameters = new HashSet<Parameter>(0);
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "algorithm", cascade={CascadeType.REMOVE})
+	private Set<AlgorithmPerson> algorithmPersons = new HashSet<AlgorithmPerson>(0);
+	
 
 //	private List<AWS_Parameter> parameterset = new ArrayList<AWS_Parameter>();
 //
@@ -145,6 +161,30 @@ public class Algorithm implements Serializable  {
 
 	public void setResultformat(String resultformat) {
 		this.resultformat = resultformat;
+	}
+
+	public AlgorithmReference getAlgorithmReference() {
+		return algorithmReference;
+	}
+
+	public void setAlgorithmReference(AlgorithmReference algorithmReference) {
+		this.algorithmReference = algorithmReference;
+	}
+
+	public Set<Parameter> getParameters() {
+		return parameters;
+	}
+
+	public void setParameters(Set<Parameter> parameters) {
+		this.parameters = parameters;
+	}
+
+	public Set<AlgorithmPerson> getAlgorithmPersons() {
+		return algorithmPersons;
+	}
+
+	public void setAlgorithmPersons(Set<AlgorithmPerson> persons) {
+		this.algorithmPersons = persons;
 	}
 	
 

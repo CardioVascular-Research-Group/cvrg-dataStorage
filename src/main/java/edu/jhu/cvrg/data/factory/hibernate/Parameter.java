@@ -2,13 +2,18 @@ package edu.jhu.cvrg.data.factory.hibernate;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -35,9 +40,6 @@ public class Parameter implements Serializable {
 	@Column(name="\"uiName\"")
 	private String uiName;
 
-	@Column(name="\"parameterValidationid\"")
-	private int parameterValidationid;
-
 	@Column(name="\"shortDescription\"")
 	private String shortDescription;
 
@@ -62,7 +64,19 @@ public class Parameter implements Serializable {
 	//------------
 	@Column(name="\"algorithmid\"")
 	private Integer algorithmid;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "\"algorithmid\"", nullable = false, insertable = false, updatable = false)
+	private Algorithm algorithm;
 
+	@OneToOne(fetch = FetchType.EAGER, cascade={CascadeType.REMOVE})
+	@JoinColumn(name = "\"parameterValidationid\"", nullable = true)
+	private ParameterValidator validator;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "\"parameterTypeid\"", nullable = false, insertable = false, updatable = false)
+	private ParameterType type;
+	
 	/** Foreign Key of the algorithm this parameter pertains to. **/
 	public Integer getAlgorithmid() {
 		return this.algorithmid;
@@ -70,19 +84,6 @@ public class Parameter implements Serializable {
 	public void setAlgorithmid(Integer algorithmID) {
 		this.algorithmid = algorithmID;
 	}
-
-	
-	// @JoinColumn(name = "algorithmid", insertable = false, updatable = false)
-	
-//	@ManyToOne
-//	private Algorithm_AWS algorithmref;
-	
-//	public Algorithm_AWS getAlgorithmref() {
-//		return this.algorithmref;
-//	}
-//	public void setlgorithmref(Algorithm_AWS algorithm) {
-//		this.algorithmref = algorithm;
-//	}
 
 	/** default constructor **/
 	public Parameter() {
@@ -109,8 +110,7 @@ public class Parameter implements Serializable {
 			Only relevent for select or data_column parameter types.
 	 */
 	public Parameter(String uiName, 
-			int iAlgorithmID, 
-			int parameterValidationID, 
+			Integer iAlgorithmID, 
 			String shortDescription,
 			String completeDescription,
 			String flag,
@@ -120,7 +120,6 @@ public class Parameter implements Serializable {
 			boolean bMutipleSelect) {
 		setUiName(uiName);
 		setAlgorithmid(iAlgorithmID);
-		setParameterValidationid(parameterValidationID);
 		setShortDescription(shortDescription);
 		setCompleteDescription(completeDescription);
 		setFlag(flag);
@@ -148,14 +147,6 @@ public class Parameter implements Serializable {
 		this.uiName = uiName;
 	}
 	//------------
-	/** Input validation entry ID, links to parameterValidation table **/
-	public int getParameterValidationid(){
-		return this.parameterValidationid;
-	}
-	public void setParameterValidationid(int id){
-		this.parameterValidationid = id;
-	}
-	//-------
 	/** Short summary description suitable for displaying as a tooltip. 150 char max**/
 	public String getShortDescription() {
 		return this.shortDescription;
@@ -217,6 +208,24 @@ public class Parameter implements Serializable {
 	}
 	public void setMultipleSelect(Boolean bmutipleSelect){
 		this.multipleSelect = bmutipleSelect;
+	}
+	public Algorithm getAlgorithm() {
+		return algorithm;
+	}
+	public void setAlgorithm(Algorithm algorithm) {
+		this.algorithm = algorithm;
+	}
+	public ParameterValidator getValidator() {
+		return validator;
+	}
+	public void setValidator(ParameterValidator validator) {
+		this.validator = validator;
+	}
+	public ParameterType getType() {
+		return type;
+	}
+	public void setType(ParameterType type) {
+		this.type = type;
 	}
 
 	

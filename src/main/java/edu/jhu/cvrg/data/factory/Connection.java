@@ -115,6 +115,8 @@ public abstract class Connection {
 	 */
 	public abstract Integer storeAlgorithm(String uiName, Integer serviceID, String serviceMethod, String shortDescription, String completeDescription) throws DataStorageException;
 	
+	public abstract boolean deleteAlgorithm(long algorithmId) throws DataStorageException;
+	
 	/** Update a single Algorithm
 	 * 
 	 * @param uiName - Human friendly name to be used by the UI when listing services.
@@ -126,7 +128,7 @@ public abstract class Connection {
 	 * @author Michael Shipway
 	 * @throws DataStorageException TODO
 	 */
-	public abstract Integer updateAlgorithm(Integer algorithmid, String uiName, Integer serviceID, String serviceMethod, String shortDescription, String completeDescription) throws DataStorageException;
+	public abstract Integer updateAlgorithm(Integer algorithmid, String uiName, Integer serviceID, String serviceMethod, String shortDescription, String completeDescription, String resultformat) throws DataStorageException;
 
 	/** Store a single Algorithm Parameter
 	 * 
@@ -148,7 +150,7 @@ public abstract class Connection {
 	 */
 	public abstract Integer updateAlgorithmParameter(AdditionalParametersDTO param, int iAlgorithmID) throws DataStorageException; 
 
-
+	public abstract boolean deleteParameter(long parameterId) throws DataStorageException;
 
 	/** Gets, via Hibernate, an ArrayList of all the Additional (optional) parameters which this specified algorithm can receive.
 	 * @param algorithmId - primary key of the algorithm in the persistence database.
@@ -212,6 +214,8 @@ public abstract class Connection {
 	 * @throws DataStorageException TODO
 	 */
 	public abstract Integer updateWebService(ServiceDTO service) throws DataStorageException;
+	
+	public abstract boolean deleteservice(Integer serviceId) throws DataStorageException;
 
 	/***************************************************************************************************************************/
 }

@@ -343,7 +343,13 @@ System.out.println("document: " + document);
 	public static void main(String[] args) throws DataStorageException {
 		DataStorageTest test = new DataStorageTest();
 		test.setup();
-		test.test06getAnalysisStatusByUserAndAnalysisId();
+		
+		try {
+			dataStorage.deleteAlgorithm(107);	
+			
+		} catch (DataStorageException e) {
+			e.printStackTrace();
+		}
 		
 	}
 }

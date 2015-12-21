@@ -1273,7 +1273,7 @@ public class HibernateConnection extends Connection {
 
 	
 	/** Gets, via Hibernate, an ArrayList of all the Additional (optional) parameters which this specified algorithm can receive.<BR>
-	 * NOTE: the "parameterValidator" table is expected to have an entry with an id of (-1) to deal with parameters which don't have any validator.
+	 * NOTE: the "parameterValidator" table is expected to have an entry with an id of (null) to deal with parameters which don't have any validator.
 	 * @param algorithmId - primary key of the algorithm in the persistence database.
 	 * @author Michael Shipway
 	 */
@@ -1283,63 +1283,37 @@ public class HibernateConnection extends Connection {
 		ArrayList<AdditionalParametersDTO> ret = new ArrayList<AdditionalParametersDTO>();
 		try{
 			Session session = sessionFactory.openSession();
-			Query qap = session.createQuery(
-					 "SELECT " +
-					 " p.parameterid, " +
-					 " p.uiName, " +
-					 " p.shortDescription, " +
-					 " p.completeDescription, " +
-					 " p.defaultValue, " +
-					 " p.required, " +
-					 " p.multipleSelect, " +
-					 " t.uiName, " +
-					 " p.parameterValidationid, " +
-					 " v.message, " +
-					 " v.min, " +
-					 " v.max, " +
-					 " v.regex, " +
-					 " v.validatorType, " +
-					 " p.flag " +
-					 "FROM " +
-					 " Parameter p," +
-					 " ParameterType t, " +
-					 " ParameterValidator v " +
-					 "WHERE p.algorithmid= :algorithmId" + 
-					 " AND p.parameterTypeid = t.parameterTypeid " +
-					 " AND p.parameterValidationid = v.parameterValidationid " +
-					 "ORDER BY p.parameterid");
 			
-			qap.setParameter("algorithmId", algorithmId);
+			Algorithm algEntity = (Algorithm) session.get(Algorithm.class, Long.valueOf(algorithmId).intValue());
 			
-			@SuppressWarnings("unchecked")
-			List<Object> l = qap.list();
-			for (int i = 0; i < l.size(); i++) {
-				Object[] obj = (Object[]) l.get(i);						
-				AdditionalParametersDTO param = new AdditionalParametersDTO();
+			for (Parameter param : algEntity.getParameters()) {
+				AdditionalParametersDTO paramDTO = new AdditionalParametersDTO();
+				paramDTO.setId(param.getParameterID());
+				paramDTO.setDisplayShortName(param.getUiName());
+				paramDTO.setToolTipDescription(param.getShortDescription());
+				paramDTO.setLongDescription(param.getCompleteDescription());
+				paramDTO.setParameterDefaultValue(param.getDefaultValue());
+				paramDTO.setOptional(!Boolean.parseBoolean(param.getDefaultValue()));
+				paramDTO.setMultipleSelect(param.getMultipleSelect()); // If true, allow multiple selections in a dropdown list. Only relevent for select or data_column parameter types.'
+				paramDTO.setType(param.getType().getUiName());
+				paramDTO.setParameterFlag(param.getFlag());
 				
-				param.setId((Integer)obj[0]);
-				param.setDisplayShortName((String) obj[1]);
-				param.setToolTipDescription((String) obj[2]);
-				param.setLongDescription((String) obj[3]);
-				param.setParameterDefaultValue((String) obj[4]);
-				param.setOptional(!((Boolean)obj[5]));
-				param.setMultipleSelect((Boolean)obj[6]); // If true, allow multiple selections in a dropdown list. Only relevent for select or data_column parameter types.'
-				param.setType((String) obj[7]);
-				param.setParameterFlag((String)obj[14]);
-				
-				ParameterValidatorDTO val = new ParameterValidatorDTO();
-				val.setId((Integer) obj[8]);
-				val.setMessage((String) obj[9]);
-				if(val.getId() > -1){ // id should be "-1" if there is no validator entry.
-					val.setMin((Float) obj[10]);
-					val.setMax((Float) obj[11]);
-					val.setRegex((String) obj[12]);
-					val.setType((Integer) obj[13]);
+				if(param.getValidator() != null){
+					ParameterValidatorDTO val = new ParameterValidatorDTO();
+					val.setId(param.getValidator().getParameterValidationid());
+					val.setMessage(param.getValidator().getMessage());
+					val.setMin(param.getValidator().getMin());
+					val.setMax(param.getValidator().getMax());
+					val.setRegex(param.getValidator().getRegex());
+					val.setType(param.getValidator().getValidatorType());
+					paramDTO.setValidator(val);
 				}
-				param.setValidator(val);
-				ret.add(param);
+				
+				ret.add(paramDTO);
 			}
+			
 			session.close();
+			
 		}catch(HibernateException hex){
 			throw new DataStorageException(hex);
 		}
@@ -1386,6 +1360,35 @@ public class HibernateConnection extends Connection {
 		
 		return algID;
 	}
+	
+	@Override
+	public boolean deleteAlgorithm(long algorithmId) throws DataStorageException{
+		
+		boolean ret = false;
+		
+		try{
+			Session session = sessionFactory.openSession();		
+			
+			Algorithm docEntity = (Algorithm) session.get(Algorithm.class, Long.valueOf(algorithmId).intValue());
+			
+			if(docEntity != null && Long.valueOf(docEntity.getAlgorithmid()).equals(algorithmId)){
+				session.beginTransaction();
+				
+				session.delete(docEntity);
+				
+				session.getTransaction().commit();
+				session.close();
+				ret = true;
+			}else{
+				throw new DataStorageException("Algorithm does not exist");	
+			}
+						
+		}catch(HibernateException ex){
+			throw new DataStorageException(ex);
+		}
+		
+		return ret;
+	}
 
 	/** Update a single Algorithm
 	 * 
@@ -1400,7 +1403,7 @@ public class HibernateConnection extends Connection {
 	@Override
 	public Integer updateAlgorithm(Integer algorithmid, String uiName, Integer serviceID, String serviceMethod, 
 			String shortDescription,
-			String completeDescription) throws DataStorageException {
+			String completeDescription, String resultformat) throws DataStorageException {
 			
 		int algID=-1;
 		
@@ -1410,8 +1413,8 @@ public class HibernateConnection extends Connection {
 			
 			Algorithm alg = new Algorithm(uiName, serviceID, serviceMethod, shortDescription, completeDescription);
 			alg.setAlgorithmid(algorithmid);
+			alg.setResultformat(resultformat);
 			session.update(alg);
-//			session.persist(alg);
 			
 			session.getTransaction().commit();
 			session.close();
@@ -1427,62 +1430,55 @@ public class HibernateConnection extends Connection {
 
 	/** Store a single Algorithm Parameter
 	 * 
-	 * @param param - Algorithm parameter to be stored in the database.
-	 * @param iAlgorithmID - Primary key of the algorithm this parameter pertains to.
+	 * @param paramDTO - Algorithm parameter to be stored in the database.
+	 * @param algorithmID - Primary key of the algorithm this parameter pertains to.
 	 * @return Algorithm Parameter's ID (Primary key in the database)
 	 * @author Michael Shipway
 	 */
 	@Override
-	public Integer storeAlgorithmParameter(AdditionalParametersDTO param, int iAlgorithmID) throws DataStorageException {
+	public Integer storeAlgorithmParameter(AdditionalParametersDTO paramDTO, int algorithmID) throws DataStorageException {
 			
 		int paramID=-1;
 		
 		try{
+			
+			ParameterValidatorDTO validatorDTO = paramDTO.getValidator();
+			
+			ParameterValidator validator = null;
+			if(validatorDTO != null && validatorDTO.getType() != 0){
+				Session session = sessionFactory.openSession();		
+				session.beginTransaction();
+				
+				validator = new ParameterValidator(validatorDTO.getType(), validatorDTO.getMessage(), validatorDTO.getMin(), validatorDTO.getMax(), validatorDTO.getRegex());
+				
+				session.persist(validator);
+				session.getTransaction().commit();
+				session.close();
+			}
+			
+			int paramType = this.getParameterTypeId(paramDTO.getType());
+			
 			Session session = sessionFactory.openSession();		
 			session.beginTransaction();
 			
-			ParameterValidatorDTO ParamVal = param.getValidator();
-			int valID = -1;
-			if(ParamVal != null){
-//				int validatorType = 0;
-//				if(ParamVal.getType().equalsIgnoreCase("in_range")) validatorType = 1;
-//				if(ParamVal.getType().equalsIgnoreCase("length")) validatorType = 2;
-//	
-//				AWS_ParameterValidator aws_val = new AWS_ParameterValidator(validatorType, 
-//								ParamVal.getMessage(), ParamVal.getMin(), ParamVal.getMax(), ParamVal.getRegex());
-				ParameterValidator aws_val = new ParameterValidator(ParamVal.getType(), 
-						ParamVal.getMessage(), ParamVal.getMin(), ParamVal.getMax(), ParamVal.getRegex());
-
-				session.persist(aws_val);
-				session.getTransaction().commit();
-				valID = aws_val.getParameterValidationid();
-			}
-			int paramType = 1; // text type parameter
-			if(param.getType().contains("text")) paramType = 1;
-			if(param.getType().contains("integer")) paramType = 2;
-			if(param.getType().contains("float")) paramType = 3;
-			if(param.getType().contains("boolean")) paramType = 4;
-			if(param.getType().contains("select")) paramType = 5;
-			if(param.getType().contains("drill_down")) paramType = 6;
-			if(param.getType().contains("data_column")) paramType = 7;
-			
-			Parameter aws_param = new Parameter(param.getDisplayShortName(), 
-							iAlgorithmID, 
-							valID, 
-							param.getDisplayShortName(), 
-							param.getLongDescription(), 
-							param.getParameterFlag(), 
-							param.getParameterDefaultValue(), 
+			Parameter param = new Parameter(paramDTO.getDisplayShortName(), 
+							algorithmID, 
+							paramDTO.getDisplayShortName(), 
+							paramDTO.getLongDescription(), 
+							paramDTO.getParameterFlag(), 
+							paramDTO.getParameterDefaultValue(), 
 							paramType, 
-							!param.getOptional(), 
+							!paramDTO.getOptional(), 
 							false);
 			
-			session.persist(aws_param);
+			param.setValidator(validator);
+			
+			session.persist(param);
 			session.getTransaction().commit();
-			System.out.println("Algorithm parameter database entry " + param.getDisplayShortName() + " wasCommitted(): " + session.getTransaction().wasCommitted());
+			System.out.println("Algorithm parameter database entry " + paramDTO.getDisplayShortName() + " wasCommitted(): " + session.getTransaction().wasCommitted());
 			session.close();
 			
-			paramID = aws_param.getParameterID();
+			paramID = param.getParameterID();
 		}catch(HibernateException ex){
 			throw new DataStorageException(ex);
 		}
@@ -1493,31 +1489,50 @@ public class HibernateConnection extends Connection {
 	
 	/** Update a single Algorithm Parameter
 	 * 
-	 * @param param - Algorithm parameter to be stored in the database.
+	 * @param paramDTO - Algorithm parameter to be stored in the database.
 	 * @param iAlgorithmID - Primary key of the algorithm this parameter pertains to.
 	 * @return
 	 * @author Michael Shipway
 	 */
 	@Override
-	public Integer updateAlgorithmParameter(AdditionalParametersDTO param, int iAlgorithmID) throws DataStorageException {
+	public Integer updateAlgorithmParameter(AdditionalParametersDTO paramDTO, int iAlgorithmID) throws DataStorageException {
 			
 		int algID=-1;
 		
 		try{
-			ParameterValidatorDTO ParamVal = param.getValidator();
 			
-			int valID = updateAWS_ParameterValidator(ParamVal);
-
-			Parameter aws_param = buildAWS_Parameter(param, iAlgorithmID, valID);
-
-			Session session = sessionFactory.openSession();		
+			Session session = sessionFactory.openSession();
+			
+			Parameter paramEntity = (Parameter) session.get(Parameter.class, paramDTO.getId());
+			
+			ParameterValidator validator = null;
+			if(paramDTO.getValidator() != null){
+				session.beginTransaction();
+				
+				validator = paramEntity.getValidator();
+				validator.setMax(paramDTO.getValidator().getMax());
+				validator.setMessage(paramDTO.getValidator().getMessage());
+				validator.setMin(paramDTO.getValidator().getMin());
+				validator.setRegex(paramDTO.getValidator().getRegex());
+				validator.setValidatorType(paramDTO.getValidator().getType());
+				
+				session.update(validator);
+				session.getTransaction().commit();
+				session.close();
+			}
+			
+			session = sessionFactory.openSession();
+			
+			Parameter param = this.buildParameter(paramDTO, iAlgorithmID, validator);
+					
 			session.beginTransaction();
-			session.update(aws_param);
+			session.update(param);
 			session.getTransaction().commit();
-			System.out.println("Algorithm parameter database entry " + param.getDisplayShortName() + " wasCommitted(): " + session.getTransaction().wasCommitted());
+			
+			System.out.println("Algorithm parameter database entry " + paramDTO.getDisplayShortName() + " wasCommitted(): " + session.getTransaction().wasCommitted());
 			session.close();
 			
-			algID = aws_param.getAlgorithmid();
+			algID = param.getAlgorithmid();
 		}catch(HibernateException ex){
 			throw new DataStorageException(ex);
 		}
@@ -1525,18 +1540,39 @@ public class HibernateConnection extends Connection {
 		return algID;
 	}
 	
-	private int updateAWS_ParameterValidator(ParameterValidatorDTO ParamVal){
+	@Override
+	public boolean deleteParameter(long parameterId) throws DataStorageException{
+		
+		boolean ret = false;
+		
+		try{
+			Session session = sessionFactory.openSession();		
+			
+			Parameter entity = (Parameter) session.get(Parameter.class, Long.valueOf(parameterId).intValue());
+			
+			if(entity != null && Long.valueOf(entity.getParameterID()).equals(parameterId)){
+				session.beginTransaction();
+				
+				session.delete(entity);
+				
+				session.getTransaction().commit();
+				session.close();
+				ret = true;
+			}else{
+				throw new DataStorageException("Parameter does not exist");	
+			}
+						
+		}catch(HibernateException ex){
+			throw new DataStorageException(ex);
+		}
+		
+		return ret;
+	}
+	private int updateParameterValidator(ParameterValidatorDTO paramVal){
 		int valID = -1;
-		if((ParamVal != null) && (ParamVal.getId() != -1)){
-//			int validatorType = 0;
-//			if(ParamVal.getType().equalsIgnoreCase("in_range")) validatorType = 1;
-//			if(ParamVal.getType().equalsIgnoreCase("length")) validatorType = 2;
-//
-//			AWS_ParameterValidator aws_val = new AWS_ParameterValidator(validatorType, 
-//							ParamVal.getMessage(), ParamVal.getMin(), ParamVal.getMax(), ParamVal.getRegex());
-			ParameterValidator aws_val = new ParameterValidator(ParamVal.getType(), 
-					ParamVal.getMessage(), ParamVal.getMin(), ParamVal.getMax(), ParamVal.getRegex());
-			aws_val.setParameterValidationid(ParamVal.getId());
+		if((paramVal != null) && (paramVal.getId() != -1)){
+			ParameterValidator aws_val = new ParameterValidator(paramVal.getType(), paramVal.getMessage(), paramVal.getMin(), paramVal.getMax(), paramVal.getRegex());
+			aws_val.setParameterValidationid(paramVal.getId());
 			Session session = sessionFactory.openSession();		
 			session.beginTransaction();
 			session.update(aws_val);
@@ -1548,29 +1584,46 @@ public class HibernateConnection extends Connection {
 		return valID;
 	}
 
-	private Parameter buildAWS_Parameter(AdditionalParametersDTO param, int iAlgorithmID, int valID){
-		int paramType = 1; // text type parameter
-		if(param.getType().contains("text")) paramType = 1;
-		if(param.getType().contains("integer")) paramType = 2;
-		if(param.getType().contains("float")) paramType = 3;
-		if(param.getType().contains("boolean")) paramType = 4;
-		if(param.getType().contains("select")) paramType = 5;
-		if(param.getType().contains("drill_down")) paramType = 6;
-		if(param.getType().contains("data_column")) paramType = 7;
+	private Parameter buildParameter(AdditionalParametersDTO paramDTO, int iAlgorithmID, ParameterValidator validator){
 		
-		Parameter aws_param = new Parameter(param.getDisplayShortName(), 
+		int paramType = getParameterTypeId(paramDTO.getType());
+		
+		Parameter param = new Parameter(paramDTO.getDisplayShortName(), 
 						iAlgorithmID, 
-						valID, 
-						param.getDisplayShortName(), 
-						param.getLongDescription(), 
-						param.getParameterFlag(), 
-						param.getParameterDefaultValue(), 
+						paramDTO.getDisplayShortName(), 
+						paramDTO.getLongDescription(), 
+						paramDTO.getParameterFlag(), 
+						paramDTO.getParameterDefaultValue(), 
 						paramType, 
-						!param.getOptional(), 
+						!paramDTO.getOptional(), 
 						false);
 		
-		aws_param.setParameterID(param.getId());
-		return aws_param;
+		param.setValidator(validator);
+		
+		param.setParameterID(paramDTO.getId());
+		return param;
+	}
+
+	private int getParameterTypeId(String type) {
+		
+		int paramType = 1; // text type parameter
+		if(type.contains("text")) {
+			paramType = 1;
+		}else if(type.contains("integer")){
+			paramType = 2;
+		}else if(type.contains("float")){
+			paramType = 3;
+		}else if(type.contains("boolean")){
+			paramType = 4;
+		}else if(type.contains("select")){
+			paramType = 5;
+		}else if(type.contains("drill_down")){
+			paramType = 6;
+		}else if(type.contains("data_column")){
+			paramType = 7;
+		}
+		
+		return paramType;
 	}
 
 	/** Store a single Web Service
@@ -1632,6 +1685,35 @@ public class HibernateConnection extends Connection {
 		}
 		
 		return serviceID;
+	}
+	
+	@Override
+	public boolean deleteservice(Integer serviceId) throws DataStorageException{
+		
+		boolean ret = false;
+		
+		try{
+			Session session = sessionFactory.openSession();		
+			
+			Service docEntity = (Service) session.get(Service.class, serviceId);
+			
+			if(docEntity != null && serviceId.equals(docEntity.getServiceid())){
+				session.beginTransaction();
+				
+				session.delete(docEntity);
+				
+				session.getTransaction().commit();
+				session.close();
+				ret = true;
+			}else{
+				throw new DataStorageException("Service does not exist");	
+			}
+						
+		}catch(HibernateException ex){
+			throw new DataStorageException(ex);
+		}
+		
+		return ret;
 	}
 	
 

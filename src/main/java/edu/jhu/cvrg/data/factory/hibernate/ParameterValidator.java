@@ -65,7 +65,6 @@ public class ParameterValidator implements Serializable {
 			float min,
 			float max,
 			String regex) {
-		setParameterValidationid(parameterValidationid);
 		setValidatorType(validatorType);
 		setMessage(message);
 		setMin(min);
