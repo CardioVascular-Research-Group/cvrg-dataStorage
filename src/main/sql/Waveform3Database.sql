@@ -322,7 +322,8 @@ CREATE TABLE annotationinfo (
     value text,
     documentrecordid bigint,
     "timestamp" timestamp without time zone,
-    analysisjobid bigint
+    analysisjobid bigint,
+    userId bigint
 );
 
 
@@ -396,7 +397,8 @@ CREATE TABLE documentrecord (
     gender character varying(75),
     dateofrecording timestamp without time zone,
     adugain double precision,
-    leadNames character varying(100)
+    leadNames character varying(100),
+    deleteFlag boolean
 );
 
 
@@ -1280,6 +1282,7 @@ ALTER SEQUENCE service_serviceid_seq OWNED BY service.serviceid;
 
 CREATE TABLE uploadstatus (
     uploadstatusid bigint NOT NULL,
+    recordname character varying(20),
     filetransfer character varying(75),
     fileconversion character varying(75),
     recordcreation character varying(75),
@@ -1395,7 +1398,50 @@ ALTER TABLE ONLY person ALTER COLUMN "personID" SET DEFAULT nextval('person_pers
 
 ALTER TABLE ONLY service ALTER COLUMN serviceid SET DEFAULT nextval('service_serviceid_seq'::regclass);
 
+CREATE TABLE virtualnode(
+  nodeid bigint NOT NULL,
+  nodename character varying(50),
+  externalreference character varying(50),
+  userid bigint,
+  parentnodeid bigint,
+  CONSTRAINT "virtualNode_PK" PRIMARY KEY (nodeid),
+  CONSTRAINT "ParentNode_FK" FOREIGN KEY (parentnodeid)
+      REFERENCES virtualnode (nodeid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
 
+ALTER TABLE public.virtualnode OWNER TO liferay;
+
+CREATE TABLE virtualdocument(
+  virtualnodeid bigint,
+  virtualdocumentname character varying(50),
+  documentrecordid bigint,
+  userid bigint,
+  virtualdocumentid bigint NOT NULL,
+  CONSTRAINT "VirtualDocument_PK" PRIMARY KEY (virtualdocumentid),
+  CONSTRAINT "virtualDocument_documentRecord_FK" FOREIGN KEY (documentrecordid)
+      REFERENCES documentrecord (documentrecordid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "virtualDocument_virtualNode_FK" FOREIGN KEY (virtualnodeid)
+      REFERENCES virtualnode (nodeid) MATCH SIMPLE
+      ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+
+ALTER TABLE public.virtualdocument OWNER TO liferay;
+
+CREATE SEQUENCE virtualnode_sequence
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
+  
+  CREATE SEQUENCE virtualdocument_sequence
+  INCREMENT 1
+  MINVALUE 1
+  MAXVALUE 9223372036854775807
+  START 1
+  CACHE 1;
 --
 -- TOC entry 2889 (class 0 OID 36791)
 -- Dependencies: 161 2920
