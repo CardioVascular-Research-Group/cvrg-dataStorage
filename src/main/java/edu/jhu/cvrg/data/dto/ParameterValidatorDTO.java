@@ -31,20 +31,24 @@ public class ParameterValidatorDTO implements Serializable{
 	
 	public void setTypetext(String  text) {
 		if(text != null){
-			switch (text){
-			case "regex": 
-				type = 1;
-				break;
-			case "in_range":
-				type = 2;
-				break;
-			case "length":
-				type = 3;
-				break;
-			default:
-				type = 0;
-				break;
-			}
+			if(text.equals("regex")) type = 1;
+			else if(text.equals("in_range")) type = 2;
+			else if(text.equals("length")) type = 3;
+			else type = 0;
+//			switch (text){
+//			case "regex": 
+//				type = 1;
+//				break;
+//			case "in_range":
+//				type = 2;
+//				break;
+//			case "length":
+//				type = 3;
+//				break;
+//			default:
+//				type = 0;
+//				break;
+//			}
 		}
 	}
 	

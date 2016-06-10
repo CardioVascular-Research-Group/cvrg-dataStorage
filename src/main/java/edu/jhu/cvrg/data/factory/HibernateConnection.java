@@ -115,6 +115,7 @@ public class HibernateConnection extends Connection {
 			    sessionFactory = cfg.buildSessionFactory(serviceRegistry);
 			}
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException("Error on data storage initialization", e);
 		}
 	}
@@ -150,6 +151,7 @@ public class HibernateConnection extends Connection {
 			
 			documentId = record.getDocumentRecordId();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -158,7 +160,7 @@ public class HibernateConnection extends Connection {
 	
 	
 	public Long updateDocument(long documentId, double samplingRate, int leadCount, int numPoints, int age, 
-							   String gender, Calendar dateRecorded, double aduGain, String leadNames, String timeseriesId) throws DataStorageException {
+							   String gender, Calendar dateRecorded, double aduGain, String leadNames, long timeseriesId) throws DataStorageException {
 		
 		
 		try {
@@ -186,6 +188,7 @@ public class HibernateConnection extends Connection {
 			session.close();
 			
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -209,6 +212,7 @@ public class HibernateConnection extends Connection {
 			session.close();
 		
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 	}
@@ -217,7 +221,7 @@ public class HibernateConnection extends Connection {
 	public Long storeDocument(long userID, String recordName, String subjectID, int originalFormat,
 			double samplingRate, String fileTreePath, int leadCount,
 			int numPoints, Calendar dateUploaded, int age, String gender,
-			Calendar dateRecorded, double aduGain, Collection<Long> filesId, String leadNames, String timeseriesId) throws DataStorageException {
+			Calendar dateRecorded, double aduGain, Collection<Long> filesId, String leadNames, long timeseriesId) throws DataStorageException {
 		
 		Long documentId = null;
 		
@@ -241,6 +245,7 @@ public class HibernateConnection extends Connection {
 			
 			documentId = record.getDocumentRecordId();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -272,6 +277,7 @@ public class HibernateConnection extends Connection {
 			session.getTransaction().commit();
 			
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}finally{
 			session.close();
@@ -297,6 +303,7 @@ public class HibernateConnection extends Connection {
 			
 			annotationId = ann.getAnnotationId();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		} 
 		
@@ -362,6 +369,7 @@ public class HibernateConnection extends Connection {
 			session.close();
 			ret = true;
 		}catch (HibernateException e){
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -390,6 +398,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -418,6 +427,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -447,6 +457,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -475,6 +486,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -503,6 +515,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -530,6 +543,7 @@ public class HibernateConnection extends Connection {
 			job = new AnalysisJobDTO(entity.getAnalysisJobId(), entity.getDocumentRecordId(), entity.getFileCount(), entity.getParameterCount(), entity.getServiceName(), entity.getServiceUrl(), entity.getServiceMethod(), entity.getDateOfAnalysis(), entity.getUserId(), entity.getAnalysisTime(), entity.getMessage());
 			
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -557,6 +571,7 @@ public class HibernateConnection extends Connection {
 			}
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -584,6 +599,7 @@ public class HibernateConnection extends Connection {
 			}
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -610,6 +626,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -666,6 +683,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -753,6 +771,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -856,6 +875,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -953,6 +973,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		}catch(HibernateException e){
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		return annotationRet;
@@ -982,6 +1003,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -990,7 +1012,7 @@ public class HibernateConnection extends Connection {
 	
 	@Override
 	public boolean updateUploadStatus(long documentRecordId, UploadState uploadPhase, Long time, Boolean status, String message) throws DataStorageException {
-		
+		System.out.println("documentRecordID is " + documentRecordId);
 		try {
 			Session session = sessionFactory.openSession();
 			
@@ -1037,6 +1059,7 @@ public class HibernateConnection extends Connection {
 			
 			return true;
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1067,6 +1090,7 @@ public class HibernateConnection extends Connection {
 			}
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1110,6 +1134,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		return ret;
@@ -1119,6 +1144,7 @@ public class HibernateConnection extends Connection {
 	public boolean storeUploadStatus(UploadStatusDTO status) throws DataStorageException {
 		
 		boolean ret = false;
+		UploadStatus entity = null;
 		
 		try {
 			if(status != null){
@@ -1126,7 +1152,7 @@ public class HibernateConnection extends Connection {
 				
 				session.beginTransaction();
 				
-				UploadStatus entity;
+				
 				
 				try{
 					entity = (UploadStatus) session.load(UploadStatus.class, status.getDocumentRecordId());
@@ -1145,12 +1171,15 @@ public class HibernateConnection extends Connection {
 						entity.setStatus(status.getStatus());
 					}
 					
-					if(status.getMessage() != null){
-						entity.setMessage(status.getMessage());
-					}
+//					if(status.getMessage() != null){
+//						entity.setMessage(status.getMessage());
+//					}
 					
 				}catch(ObjectNotFoundException e){
-					entity = new UploadStatus(status.getDocumentRecordId(), status.getAnnotationTime(), status.getTransferReadTime(), status.getValidationTime(), status.getWriteTime(), status.getStatus(), status.getMessage());
+					e.printStackTrace();
+//					entity = new UploadStatus(status.getDocumentRecordId(), status.getAnnotationTime(), 
+//							status.getTransferReadTime(), status.getValidationTime(), status.getWriteTime(), 
+//							status.getStatus(), status.getMessage());
 				}
 				
 				session.persist(entity);
@@ -1158,8 +1187,10 @@ public class HibernateConnection extends Connection {
 				
 				session.getTransaction().commit();
 				session.close();
+				
 			}
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 	
@@ -1194,6 +1225,7 @@ public class HibernateConnection extends Connection {
 	
 			session.close();
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		return ret;
@@ -1266,6 +1298,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		return ret;
@@ -1315,6 +1348,7 @@ public class HibernateConnection extends Connection {
 			session.close();
 			
 		}catch(HibernateException hex){
+			hex.printStackTrace();
 			throw new DataStorageException(hex);
 		}
 		
@@ -1355,6 +1389,7 @@ public class HibernateConnection extends Connection {
 			session.getTransaction().commit();
 			session.close();			
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1384,6 +1419,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1421,6 +1457,7 @@ public class HibernateConnection extends Connection {
 			
 			algID = alg.getAlgorithmid();
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1480,6 +1517,7 @@ public class HibernateConnection extends Connection {
 			
 			paramID = param.getParameterID();
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1534,6 +1572,7 @@ public class HibernateConnection extends Connection {
 			
 			algID = param.getAlgorithmid();
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1563,6 +1602,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1652,6 +1692,7 @@ public class HibernateConnection extends Connection {
 			session.getTransaction().commit();
 			session.close();			
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1681,6 +1722,7 @@ public class HibernateConnection extends Connection {
 			session.getTransaction().commit();
 			session.close();			
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1710,6 +1752,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1762,6 +1805,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1793,6 +1837,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		
@@ -1820,6 +1865,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1856,6 +1902,7 @@ public class HibernateConnection extends Connection {
 			
 			return true;
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1925,6 +1972,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		return ret;
@@ -1947,6 +1995,7 @@ public class HibernateConnection extends Connection {
 			
 			nodeId = record.getNodeId();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1970,6 +2019,7 @@ public class HibernateConnection extends Connection {
 			
 			virtalDocId = record.getVirtualDocumentId();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -1998,6 +2048,7 @@ public class HibernateConnection extends Connection {
 			session.getTransaction().commit();
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 	}
@@ -2039,6 +2090,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -2078,6 +2130,7 @@ public class HibernateConnection extends Connection {
 			
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			log.error("Error on retrive the Virtual Documents for user " + userId + ". Message: " + e.getMessage());
 			return null;
 		}
@@ -2114,6 +2167,7 @@ public class HibernateConnection extends Connection {
 			}
 			session.close();
 		} catch (HibernateException e) {
+			e.printStackTrace();
 			throw new DataStorageException(e);
 		}
 		
@@ -2143,6 +2197,7 @@ public class HibernateConnection extends Connection {
 			}
 						
 		}catch(HibernateException ex){
+			ex.printStackTrace();
 			throw new DataStorageException(ex);
 		}
 		

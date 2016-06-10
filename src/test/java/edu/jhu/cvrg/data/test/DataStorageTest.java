@@ -40,7 +40,7 @@ public class DataStorageTest{
 	private long userId = 999999999L;
 	private static AnalysisJobDTO analysisJob;
 	private static Long annotationId;
-	private static String timeseriesId = null;
+	private static Long timeseriesId = null;
 	
 	@Before
 	public void setup() {

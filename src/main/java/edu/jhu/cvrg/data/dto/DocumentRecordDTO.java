@@ -13,7 +13,7 @@ public class DocumentRecordDTO implements Serializable{
 	private static final long serialVersionUID = 2261268385587096394L;
 	
 	private Long documentRecordId;
-	private String timeSeriesId;
+	private long timeSeriesId;
 	private String recordName;
 	private Long userId;
 	private String subjectId;
@@ -33,7 +33,7 @@ public class DocumentRecordDTO implements Serializable{
 			Long userId, String subjectId, FileType originalFormat,
 			Double samplingRate, String fileTreePath, Integer leadCount,
 			Integer numberOfPoints, Date dateOfUpload, Integer age,
-			String gender, Date dateOfRecording, Double aduGain, String leadNames, String timeseriesId) {
+			String gender, Date dateOfRecording, Double aduGain, String leadNames, long timeseriesId) {
 		super();
 		this.documentRecordId = documentRecordId;
 		this.recordName = recordName;
@@ -163,11 +163,11 @@ public class DocumentRecordDTO implements Serializable{
 		return leadNames;
 	}
 
-	public String getTimeSeriesId() {
-		return timeSeriesId;
+	public long getTimeSeriesId() {
+		return Long.valueOf(timeSeriesId);
 	}
 
-	public void setTimeSeriesId(String timeSeriesId) {
+	public void setTimeSeriesId(long timeSeriesId) {
 		this.timeSeriesId = timeSeriesId;
 	}
 
